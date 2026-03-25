@@ -423,6 +423,25 @@
   }
   .table-preset-btn:hover { background: var(--bg-accent-hover); color: var(--c-accent); }
 
+  /* Mobile inline qty selector (expands below product row) */
+  .mobile-qty-panel {
+    padding: 10px 12px; background: var(--bg-card); border: 1px solid var(--c-accent-border);
+    border-radius: 0 0 8px 8px; margin-top: -6px; margin-bottom: 6px;
+    animation: fadeIn 0.15s ease-out;
+  }
+  .mobile-qty-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .mobile-qty-row .qty-btn { width: 36px; height: 36px; font-size: 18px; }
+  .mobile-qty-row .qty-input { width: 64px; height: 36px; font-size: 16px; }
+  .mobile-qty-presets { display: flex; gap: 6px; margin-bottom: 10px; }
+  .mobile-qty-presets .qty-preset-btn { padding: 5px 10px; font-size: 12px; }
+  .mobile-qty-add-btn {
+    width: 100%; padding: 10px; border-radius: 8px; border: none;
+    background: linear-gradient(135deg, var(--c-accent-dark), var(--c-accent)); color: #fff;
+    font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* Utility classes */
   .desktop-only { display: none !important; }
   .mobile-only { }
@@ -782,6 +801,8 @@ function App(){
   const[pricesLoaded,setPricesLoaded]=useState(false);
   const[theme,setTheme]=useState('dark');
   const[tableQtys,setTableQtys]=useState({});
+  const[mobileQtyOpen,setMobileQtyOpen]=useState(null);
+  const[mobileQtyVal,setMobileQtyVal]=useState(1);
   const top=useRef(null);
   const isDesktop=useIsDesktop();
 
@@ -819,10 +840,10 @@ function App(){
   },[]);
 
   const go=()=>top.current?.scrollIntoView({behavior:"smooth"});
-  const home=()=>{setV(V.HOME);setGk(null);setSk(null);setSel(null);setQ("");setShowS(false);go();};
-  const goG=(k)=>{setGk(k);setV(V.GROUP);go();};
-  const goS=(g,s)=>{setGk(g);setSk(s);setV(V.SUB);go();};
-  const goP=(g,s,gi,pi)=>{setGk(g);setSk(s);setSel({gi,pi});setQty(1);setAddedMsg(false);setV(V.PROD);go();};
+  const home=()=>{setV(V.HOME);setGk(null);setSk(null);setSel(null);setQ("");setShowS(false);setMobileQtyOpen(null);go();};
+  const goG=(k)=>{setGk(k);setV(V.GROUP);setMobileQtyOpen(null);go();};
+  const goS=(g,s)=>{setGk(g);setSk(s);setV(V.SUB);setMobileQtyOpen(null);go();};
+  const goP=(g,s,gi,pi)=>{setGk(g);setSk(s);setSel({gi,pi});setQty(1);setAddedMsg(false);setV(V.PROD);setMobileQtyOpen(null);go();};
   const goCart=()=>{setV(V.CART);setShowS(false);go();};
 
   const cartCount=cart.reduce((a,c)=>a+(typeof c.qty==='number'?c.qty:0),0);
@@ -939,13 +960,28 @@ function App(){
     ):(
       <div className="mobile-products">
       {sub.groups.map((gr,gi)=>(<div key={gi} className="group-block"><span className="group-label">{gr.label}</span>
-        {gr.items.map((item,pi)=>(<div key={pi} className="product-row" onClick={()=>goP(gk,sk,gi,pi)}>
-          <div style={{flex:1,minWidth:0}}><div className="p-size">{item.size}</div><div className="p-dim">{item.dim}</div></div>
-          <div style={{display:'flex',alignItems:'center',gap:8}}>
-            <div className={item.price!==null?"p-price":"p-price consultar"}>{fmt(item.price)}</div>
-            {item.price!==null&&<button className="mobile-quick-add" onClick={e=>{e.stopPropagation();addToCart(sub.name,item,1,gk,sk);}} title="Agregar 1 al carrito">+🛒</button>}
+        {gr.items.map((item,pi)=>{const mKey=`${sk}-${gi}-${pi}`;const isOpen=mobileQtyOpen===mKey;return(<React.Fragment key={pi}>
+          <div className="product-row" style={isOpen?{borderRadius:'8px 8px 0 0',marginBottom:0,borderColor:'var(--c-accent-border)'}:{}} onClick={()=>goP(gk,sk,gi,pi)}>
+            <div style={{flex:1,minWidth:0}}><div className="p-size">{item.size}</div><div className="p-dim">{item.dim}</div></div>
+            <div style={{display:'flex',alignItems:'center',gap:8}}>
+              <div className={item.price!==null?"p-price":"p-price consultar"}>{fmt(item.price)}</div>
+              {item.price!==null&&<button className="mobile-quick-add" onClick={e=>{e.stopPropagation();if(isOpen){setMobileQtyOpen(null);}else{setMobileQtyOpen(mKey);setMobileQtyVal(1);}}}>{isOpen?"✕":"🛒"}</button>}
+            </div>
           </div>
-        </div>))}
+          {isOpen&&item.price!==null&&(
+            <div className="mobile-qty-panel" onClick={e=>e.stopPropagation()}>
+              <div className="mobile-qty-presets">
+                {[10,20,50,100].map(n=>(<button key={n} className="qty-preset-btn" onClick={()=>setMobileQtyVal(prev=>Math.min(499,(typeof prev==='number'?prev:1)+n))}>+{n}</button>))}
+              </div>
+              <div className="mobile-qty-row">
+                <button className="qty-btn" onClick={()=>setMobileQtyVal(prev=>Math.max(1,(typeof prev==='number'?prev:1)-1))} disabled={mobileQtyVal<=1}>−</button>
+                <input type="number" className="qty-input" value={mobileQtyVal} min="1" max="499" onChange={e=>{const v=e.target.value;if(v===''){setMobileQtyVal('');return;}const n=parseInt(v);if(!isNaN(n))setMobileQtyVal(Math.min(499,Math.max(1,n)));}} onBlur={()=>{if(mobileQtyVal===''||mobileQtyVal<1)setMobileQtyVal(1);}} onFocus={e=>e.target.select()}/>
+                <button className="qty-btn" onClick={()=>setMobileQtyVal(prev=>Math.min(499,(typeof prev==='number'?prev:1)+1))} disabled={typeof mobileQtyVal==='number'&&mobileQtyVal>=499}>+</button>
+              </div>
+              <button className="mobile-qty-add-btn" onClick={()=>{const q=typeof mobileQtyVal==='number'?mobileQtyVal:1;addToCart(sub.name,item,q,gk,sk);setMobileQtyOpen(null);}}>🛒 Agregar {typeof mobileQtyVal==='number'?mobileQtyVal:1} al carrito</button>
+            </div>
+          )}
+        </React.Fragment>);})}
       </div>))}
       </div>
     )}
