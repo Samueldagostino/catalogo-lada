@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Catálogo Lada</title>
 <meta name="description" content="Catálogo de productos de acero y construcción — LADA Venezuela" />
 <meta name="theme-color" content="#0a0f0c" />
@@ -270,6 +270,209 @@
   @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)} }
   .pop { animation: pop 0.3s ease-out; }
   .group-block { margin-bottom: 20px; }
+
+  /* Utility classes */
+  .desktop-only { display: none !important; }
+  .mobile-only { }
+  .cart-label { display: none; }
+
+  /* Desktop layout containers (inactive on mobile) */
+  .desktop-layout { display: block; }
+  .desktop-sidebar { display: none; }
+  .desktop-content { width: 100%; }
+
+  /* Hero banner (hidden on mobile) */
+  .hero-banner { display: none; }
+
+  /* Category grid (single column on mobile) */
+  .cat-grid { display: block; }
+
+  /* Stats bar hidden on mobile */
+  .stats-bar { display: none; }
+
+  /* Search wrapper */
+  .search-wrapper { position: relative; }
+  .search-dropdown { display: none; }
+  .search-dropdown-more { padding: 12px; text-align: center; color: #2ecc40; font-size: 13px; font-weight: 600; cursor: pointer; border-top: 1px solid #1a7a3a22; }
+  .search-dropdown-more:hover { background: #1a7a3a22; }
+
+  /* Cart layout (single column on mobile) */
+  .cart-layout { display: block; }
+  .cart-items { width: 100%; }
+  .cart-sidebar { width: 100%; }
+
+  /* Footer grid (single column on mobile) */
+  .footer-grid { display: none; }
+  .footer-col { margin-bottom: 12px; }
+  .footer-heading { display: none; }
+  .footer-link { display: none; }
+  .footer-logo { display: none; }
+  .footer-bcv { display: none; }
+  .footer-desc { display: none; }
+  .footer-copyright { font-size: 12px; color: #3a5a40; }
+  .footer-copyright p { margin-bottom: 4px; }
+
+  /* Sidebar styles (hidden by default) */
+  .sidebar-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #5a8a62; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #1a7a3a33; cursor: pointer; }
+  .sidebar-title:hover { color: #2ecc40; }
+  .sidebar-cat { margin-bottom: 2px; }
+  .sidebar-cat-btn { display: flex; justify-content: space-between; align-items: center; width: 100%; background: none; border: none; color: #d4e5d7; font-size: 14px; font-weight: 700; font-family: inherit; padding: 8px 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s; text-align: left; }
+  .sidebar-cat-btn:hover { background: #1a7a3a22; color: #2ecc40; }
+  .sidebar-cat-btn.active { background: #1a7a3a33; color: #2ecc40; }
+  .sidebar-chevron { font-size: 12px; color: #5a8a62; transition: transform 0.2s; }
+  .sidebar-subs { padding: 4px 0 8px 16px; overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease; }
+  .sidebar-sub-btn { display: block; width: 100%; background: none; border: none; color: #7a9a80; font-size: 13px; font-family: inherit; padding: 5px 8px; border-radius: 4px; cursor: pointer; text-align: left; transition: all 0.15s; }
+  .sidebar-sub-btn:hover { color: #d4e5d7; background: #1a7a3a15; }
+  .sidebar-sub-btn.active { color: #2ecc40; background: #1a7a3a22; font-weight: 600; }
+
+  /* Product table (desktop only, hidden by default) */
+  .product-table { display: none; }
+
+  /* Subcategory grid (for desktop GROUP view) */
+  .sub-grid { display: block; }
+
+  /* ========== TABLET (768px - 1023px) ========== */
+  @media (min-width: 768px) {
+    .app { max-width: 900px; }
+    .header { padding: 14px 32px; }
+    .body { padding: 24px 32px 80px; }
+    .logo { font-size: 32px; }
+    .section-title { font-size: 24px; }
+    .detail-name { font-size: 26px; }
+    .footer { padding: 32px; }
+    .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .cat-card { margin-bottom: 0; }
+    .sub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .sub-card { margin-bottom: 0; }
+    .modal { max-width: 500px; }
+  }
+
+  /* ========== DESKTOP (≥1024px) ========== */
+  @media (min-width: 1024px) {
+    .app { max-width: 1400px; }
+    .header { padding: 12px 40px; transition: box-shadow 0.3s; box-shadow: 0 2px 16px rgba(0,0,0,0.3); }
+    .header-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 24px; }
+    .body { padding: 24px 40px 60px; }
+    .logo { font-size: 36px; letter-spacing: 8px; }
+    .subtitle { font-size: 12px; letter-spacing: 4px; }
+
+    /* Desktop-only elements */
+    .desktop-only { display: block !important; }
+    .mobile-only { display: none !important; }
+
+    /* Cart label */
+    .cart-label { display: inline; font-size: 13px; color: #5ebd6e; font-weight: 600; margin-left: 4px; }
+
+    /* Search always visible in header */
+    .search-wrapper.desktop-only { display: block !important; }
+    .search-wrapper .search-box { margin-top: 0; max-width: 500px; width: 100%; margin-left: auto; margin-right: auto; padding: 10px 14px 10px 38px; }
+    .search-wrapper .search-icon { position: absolute; left: 50%; margin-left: -250px; padding-left: 12px; top: 50%; transform: translateY(-50%); color: #3a5a40; font-size: 14px; pointer-events: none; z-index: 1; }
+
+    /* Search dropdown overlay */
+    .search-dropdown { display: block; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); width: 500px; background: #111a14; border: 1px solid #1a7a3a; border-top: none; border-radius: 0 0 10px 10px; z-index: 150; max-height: 440px; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.6); animation: fadeIn 0.15s ease-out; }
+    .search-dropdown .search-result { border-radius: 0; margin-bottom: 0; border: none; border-bottom: 1px solid #1a7a3a15; }
+    .search-dropdown .search-result:last-child { border-bottom: none; }
+
+    /* Breadcrumb nav bar */
+    .nav { margin-top: 8px; padding-top: 8px; border-top: 1px solid #1a7a3a22; }
+    .nav-btn { font-size: 13px; padding: 5px 12px; }
+
+    /* Section titles */
+    .section-title { font-size: 28px; font-weight: 800; }
+    .home-intro { display: none; }
+
+    /* Hero banner */
+    .hero-banner { display: block; text-align: center; padding: 52px 40px 44px; margin-bottom: 32px; border-bottom: 1px solid #1a7a3a22; position: relative; overflow: hidden; }
+    .hero-banner::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 10px, #1a7a3a08 10px, #1a7a3a08 11px); pointer-events: none; }
+    .hero-banner h1 { font-size: 48px; font-weight: 900; color: #2ecc40; letter-spacing: 12px; margin-bottom: 12px; text-transform: uppercase; }
+    .hero-banner p { font-size: 18px; color: #7a9a80; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+    /* Stats bar */
+    .stats-bar { display: flex; justify-content: center; gap: 32px; padding: 16px 0 8px; margin-bottom: 24px; }
+    .stat-item { text-align: center; }
+    .stat-val { font-size: 20px; font-weight: 800; color: #2ecc40; }
+    .stat-label { font-size: 12px; color: #5a8a62; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+    /* Category grid: 3 columns */
+    .cat-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .cat-card { padding: 24px; }
+    .cat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); border-color: #2ecc40; }
+    .cat-icon { font-size: 42px; }
+    .cat-title { font-size: 20px; }
+    .cat-desc { font-size: 14px; }
+
+    /* Sidebar + content layout */
+    .desktop-layout { display: flex; gap: 32px; align-items: flex-start; }
+    .desktop-sidebar { display: block; width: 260px; flex-shrink: 0; position: sticky; top: 100px; max-height: calc(100vh - 120px); overflow-y: auto; background: linear-gradient(135deg, #0d1a10 0%, #132918 100%); border: 1px solid #1a7a3a33; border-radius: 12px; padding: 16px; }
+    .desktop-sidebar::-webkit-scrollbar { width: 4px; }
+    .desktop-sidebar::-webkit-scrollbar-thumb { background: #1a7a3a44; border-radius: 2px; }
+    .desktop-content { flex: 1; min-width: 0; }
+
+    /* Subcategory grid */
+    .sub-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .sub-card { margin-bottom: 0; padding: 18px; }
+    .sub-card:hover { transform: translateX(4px); }
+    .sub-name { font-size: 17px; }
+
+    /* Product table */
+    .product-table { display: table; width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
+    .product-table thead { position: sticky; top: 80px; z-index: 10; }
+    .product-table th { background: #0d1610; color: #5a8a62; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 10px 12px; text-align: left; border-bottom: 2px solid #1a7a3a; white-space: nowrap; }
+    .product-table th:nth-child(4), .product-table th:nth-child(5) { text-align: right; }
+    .product-table th:last-child { text-align: center; }
+    .group-header-row td { background: #1a7a3a18; color: #2ecc40; font-size: 13px; font-weight: 700; padding: 8px 12px; border-bottom: 1px solid #1a7a3a22; }
+    .table-row { cursor: pointer; transition: background 0.15s; }
+    .table-row:nth-child(even) { background: #0a1210; }
+    .table-row:hover { background: #162119 !important; }
+    .product-table td { padding: 10px 12px; border-bottom: 1px solid #1a7a3a10; vertical-align: middle; }
+    .td-size { font-weight: 600; color: #d4e5d7; white-space: nowrap; }
+    .td-dim { color: #7a9a80; white-space: nowrap; }
+    .td-group { color: #5a8a62; font-size: 13px; }
+    .td-price { font-weight: 800; color: #2ecc40; font-size: 16px; text-align: right; white-space: nowrap; }
+    .td-price.consultar { color: #c7963a; font-style: italic; font-weight: 700; font-size: 14px; }
+    .td-price-bs { color: #7a9a80; font-size: 13px; text-align: right; white-space: nowrap; }
+    .table-action-btn { background: #1a7a3a33; border: 1px solid #1a7a3a; color: #2ecc40; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 700; font-family: inherit; white-space: nowrap; transition: all 0.15s; }
+    .table-action-btn:hover { background: #1a7a3a55; transform: translateY(-1px); }
+
+    /* Hide mobile product rows on desktop when table is shown */
+    .mobile-products { display: none; }
+
+    /* Product detail: two columns */
+    .detail-box { display: flex; flex-direction: row; }
+    .detail-img { width: 360px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-height: 300px; }
+    .detail-info { flex: 1; padding: 28px; }
+    .detail-name { font-size: 28px; }
+    .detail-price { font-size: 36px; }
+
+    /* Other sizes as compact table */
+    .other-sizes-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .other-sizes-table td { padding: 8px 10px; border-bottom: 1px solid #1a7a3a10; cursor: pointer; transition: background 0.15s; }
+    .other-sizes-table tr:hover td { background: #162119; }
+
+    /* Cart: two columns */
+    .cart-layout { display: flex; gap: 32px; align-items: flex-start; }
+    .cart-items { flex: 1; min-width: 0; }
+    .cart-sidebar { width: 360px; flex-shrink: 0; position: sticky; top: 100px; }
+    .cart-summary { margin-top: 0; }
+
+    /* Footer: multi-column */
+    .footer { text-align: left; padding: 40px; border-top: 1px solid #1a7a3a33; }
+    .footer p { font-size: 13px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; text-align: left; padding-bottom: 24px; margin-bottom: 20px; border-bottom: 1px solid #1a7a3a22; }
+    .footer-logo { display: block; font-size: 24px; font-weight: 900; color: #2ecc40; letter-spacing: 6px; margin-bottom: 10px; text-transform: uppercase; }
+    .footer-desc { display: block; font-size: 13px; color: #5a8a62; line-height: 1.6; }
+    .footer-heading { display: block; font-size: 13px; font-weight: 700; color: #2ecc40; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .footer-link { display: block; background: none; border: none; color: #7a9a80; font-size: 13px; font-family: inherit; padding: 3px 0; cursor: pointer; text-align: left; transition: color 0.15s; }
+    .footer-link:hover { color: #2ecc40; }
+    .footer-bcv { display: block; background: #1a3a2a; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 14px; color: #2ecc40; font-weight: 700; }
+    .footer-copyright { text-align: center; }
+
+    /* Modal */
+    .modal { max-width: 520px; }
+
+    /* Back button hidden on desktop when sidebar present */
+    .hide-on-desktop { display: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -378,6 +581,37 @@ return(<svg width={sz} height={sz} viewBox="0 0 200 200" style={{background:c.bg
 
 const V={HOME:0,GROUP:1,SUB:2,PROD:3,CART:4};
 
+function useIsDesktop(bp=1024){
+  const[d,setD]=useState(typeof window!=='undefined'&&window.innerWidth>=bp);
+  useEffect(()=>{const h=()=>setD(window.innerWidth>=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h);},[bp]);
+  return d;
+}
+
+function Sidebar({currentGk,currentSk,onGoG,onGoS,onHome}){
+  const[expanded,setExpanded]=useState(null);
+  useEffect(()=>{if(currentGk)setExpanded(currentGk);},[currentGk]);
+  return(
+    <nav className="desktop-sidebar">
+      <div className="sidebar-title" onClick={onHome}>Categorías</div>
+      {Object.entries(P).map(([key,g])=>(
+        <div key={key} className="sidebar-cat">
+          <button className={`sidebar-cat-btn ${currentGk===key?'active':''}`} onClick={()=>{setExpanded(expanded===key?null:key);onGoG(key);}}>
+            <span>{g.icon} {g.name}</span>
+            <span className="sidebar-chevron">{expanded===key?'▾':'›'}</span>
+          </button>
+          {expanded===key&&(
+            <div className="sidebar-subs">
+              {Object.entries(g.subcategories).map(([sKey,sub])=>(
+                <button key={sKey} className={`sidebar-sub-btn ${currentSk===sKey&&currentGk===key?'active':''}`} onClick={(e)=>{e.stopPropagation();onGoS(key,sKey);}}>{sub.name}</button>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </nav>
+  );
+}
+
 function App(){
   const[v,setV]=useState(V.HOME);
   const[gk,setGk]=useState(null);
@@ -395,6 +629,7 @@ function App(){
   const[bcvRate,setBcvRate]=useState(null);
   const[pricesLoaded,setPricesLoaded]=useState(false);
   const top=useRef(null);
+  const isDesktop=useIsDesktop();
 
   // Load live prices from precios.json (generated by GitHub Actions from Google Sheet)
   useEffect(()=>{
@@ -478,8 +713,21 @@ function App(){
 
   const fmt=(p)=>p===null?"Consultar":`$${p.toLocaleString("es-VE",{minimumFractionDigits:p%1!==0?2:0})}`;
 
+  const totalProducts=Object.values(P).reduce((a,g)=>a+Object.values(g.subcategories).reduce((b,s)=>b+s.groups.reduce((c,gr)=>c+gr.items.length,0),0),0);
+  const totalCats=Object.keys(P).length;
+
   const renderHome=()=>(<div className="fade-in">
+    <div className="hero-banner">
+      <h1>LADA</h1>
+      <p>Catálogo completo de acero y materiales de construcción</p>
+    </div>
+    <div className="stats-bar">
+      <div className="stat-item"><div className="stat-val">{totalProducts}</div><div className="stat-label">Productos</div></div>
+      <div className="stat-item"><div className="stat-val">{totalCats}</div><div className="stat-label">Categorías</div></div>
+      {bcvRate&&<div className="stat-item"><div className="stat-val">{bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})}</div><div className="stat-label">Tasa BCV Bs/$</div></div>}
+    </div>
     <div className="home-intro"><p>Catálogo completo de productos de acero y construcción</p></div>
+    <div className="cat-grid">
     {Object.entries(P).map(([key,g])=>{
       const cnt=Object.values(g.subcategories).reduce((a,s)=>a+s.groups.reduce((b,gr)=>b+gr.items.length,0),0);
       return(<div key={key} className="cat-card" onClick={()=>goG(key)}>
@@ -487,28 +735,52 @@ function App(){
         <div className="cat-row"><div><div className="cat-title">{g.name}</div><div className="cat-desc">{g.desc}</div></div><span className="badge">{cnt} productos</span></div>
       </div>);
     })}
+    </div>
   </div>);
 
   const renderGroup=()=>{const g=P[gk];if(!g)return null;return(<div className="fade-in">
-    <button className="back-btn" onClick={home}>← Categorías</button>
+    <button className="back-btn hide-on-desktop" onClick={home}>← Categorías</button>
     <h2 className="section-title">{g.icon} {g.name}</h2>
+    <div className="sub-grid">
     {Object.entries(g.subcategories).map(([sKey,sub])=>{
       const cnt=sub.groups.reduce((a,gr)=>a+gr.items.length,0);
       return(<div key={sKey} className="sub-card" onClick={()=>goS(gk,sKey)}>
-        <Img type={sub.image} sz={64}/><div style={{flex:1}}><div className="sub-name">{sub.name}</div><div className="sub-count">{cnt} opciones</div></div><span className="sub-arrow">›</span>
+        <Img type={sub.image} sz={isDesktop?80:64}/><div style={{flex:1}}><div className="sub-name">{sub.name}</div><div className="sub-count">{cnt} opciones</div></div><span className="sub-arrow">›</span>
       </div>);
     })}
+    </div>
   </div>);};
 
   const renderSub=()=>{const g=P[gk];const sub=g?.subcategories[sk];if(!sub)return null;return(<div className="fade-in">
-    <button className="back-btn" onClick={()=>goG(gk)}>← {g.name}</button>
-    <div className="subcat-header"><Img type={sub.image} sz={72}/><h2 className="section-title">{sub.name}</h2></div>
-    {sub.groups.map((gr,gi)=>(<div key={gi} className="group-block"><span className="group-label">{gr.label}</span>
-      {gr.items.map((item,pi)=>(<div key={pi} className="product-row" onClick={()=>goP(gk,sk,gi,pi)}>
-        <div><div className="p-size">{item.size}</div><div className="p-dim">{item.dim}</div></div>
-        <div className={item.price!==null?"p-price":"p-price consultar"}>{fmt(item.price)}</div>
+    <button className="back-btn hide-on-desktop" onClick={()=>goG(gk)}>← {g.name}</button>
+    <div className="subcat-header"><Img type={sub.image} sz={isDesktop?100:72}/><h2 className="section-title">{sub.name}</h2></div>
+    {isDesktop?(
+      <table className="product-table" style={{display:'table'}}>
+        <thead><tr><th>Medida</th><th>Dimensión</th><th>Grupo</th><th>Precio USD</th>{bcvRate&&<th>Precio Bs</th>}<th></th></tr></thead>
+        <tbody>
+        {sub.groups.map((gr,gi)=>(<React.Fragment key={gi}>
+          <tr className="group-header-row"><td colSpan={bcvRate?6:5}>{gr.label}</td></tr>
+          {gr.items.map((item,pi)=>(<tr key={pi} className="table-row" onClick={()=>goP(gk,sk,gi,pi)}>
+            <td className="td-size">{item.size}</td>
+            <td className="td-dim">{item.dim}</td>
+            <td className="td-group">{gr.label}</td>
+            <td className={item.price!==null?"td-price":"td-price consultar"}>{fmt(item.price)}</td>
+            {bcvRate&&<td className="td-price-bs">{item.price!==null?(item.price*bcvRate).toLocaleString("es-VE",{minimumFractionDigits:2})+" Bs":"—"}</td>}
+            <td style={{textAlign:'center'}}><button className="table-action-btn" onClick={(e)=>{e.stopPropagation();if(item.price!==null)addToCart(sub.name,item,1,gk,sk);else goP(gk,sk,gi,pi);}}>{item.price!==null?"+ Agregar":"Ver"}</button></td>
+          </tr>))}
+        </React.Fragment>))}
+        </tbody>
+      </table>
+    ):(
+      <div className="mobile-products">
+      {sub.groups.map((gr,gi)=>(<div key={gi} className="group-block"><span className="group-label">{gr.label}</span>
+        {gr.items.map((item,pi)=>(<div key={pi} className="product-row" onClick={()=>goP(gk,sk,gi,pi)}>
+          <div><div className="p-size">{item.size}</div><div className="p-dim">{item.dim}</div></div>
+          <div className={item.price!==null?"p-price":"p-price consultar"}>{fmt(item.price)}</div>
+        </div>))}
       </div>))}
-    </div>))}
+      </div>
+    )}
   </div>);};
 
   const renderProd=()=>{
@@ -519,9 +791,9 @@ function App(){
     const canAdd=item.price!==null;
     const lineTotal=canAdd?item.price*qty:0;
     return(<div className="fade-in">
-      <button className="back-btn" onClick={()=>goS(gk,sk)}>← {sub.name}</button>
+      <button className="back-btn hide-on-desktop" onClick={()=>goS(gk,sk)}>← {sub.name}</button>
       <div className="detail-box">
-        <div className="detail-img"><Img type={sub.image} sz={200}/></div>
+        <div className="detail-img"><Img type={sub.image} sz={isDesktop?300:200}/></div>
         <div className="detail-info">
           <h2 className="detail-name">{sub.name}</h2>
           <p className="detail-sub">{item.size} — {item.dim}</p>
@@ -564,7 +836,8 @@ function App(){
       <div className="cart-empty-text">Tu carrito está vacío</div>
       <div className="cart-empty-sub">Agrega productos desde el catálogo</div>
       <button className="continue-btn" onClick={home} style={{marginTop:24,maxWidth:250,marginLeft:"auto",marginRight:"auto"}}>Explorar productos</button>
-    </div>):(<>
+    </div>):(<div className="cart-layout">
+      <div className="cart-items">
       {cart.map((c)=>(<div key={c.id} className="cart-item">
         <div className="cart-item-top">
           <div><div className="cart-item-name">{c.subName}</div><div className="cart-item-detail">{c.size} — {c.dim}</div></div>
@@ -582,6 +855,8 @@ function App(){
           </div>
         </div>
       </div>))}
+      </div>
+      <div className="cart-sidebar">
       <div className="cart-summary">
         <div className="cart-summary-row"><span className="cart-summary-label">Productos</span><span className="cart-summary-val">{cartCount} pza</span></div>
         <div className="cart-summary-row"><span className="cart-summary-label">Artículos diferentes</span><span className="cart-summary-val">{cart.length}</span></div>
@@ -592,7 +867,8 @@ function App(){
         <button className="continue-btn" onClick={home}>Seguir comprando</button>
         <button className="cart-clear-btn" onClick={clearCart}>Vaciar carrito</button>
       </div>
-    </>)}
+      </div>
+    </div>)}
   </div>);
 
   const renderSearch=()=>(<div className="fade-in">
@@ -621,35 +897,66 @@ function App(){
     </div>);
   };
 
+  const desktopSearchChange=(e)=>{setQ(e.target.value);if(!showS)setShowS(true);};
+  const closeDesktopSearch=()=>{setQ("");};
+
   return(<div>
     <div ref={top}/>
     <header className="header">
       <div className="header-top">
         <div><div className="logo" onClick={home}>LADA</div><div className="subtitle">Materiales y Construcción</div></div>
+        <div className="search-wrapper desktop-only">
+          <input className="search-box" placeholder='Buscar producto... ej: "1/2", "3mm", "SCH40"' value={q} onChange={desktopSearchChange}/>
+          {q.trim()&&sr.length>0&&(
+            <div className="search-dropdown">
+              <div style={{padding:'8px 12px',fontSize:12,color:'#5a8a62',borderBottom:'1px solid #1a7a3a15'}}>{sr.length} resultado{sr.length!==1?'s':''}</div>
+              {sr.map((r,i)=>(<div key={i} className="search-result" onClick={()=>{setShowS(false);setQ("");goP(r.gKey,r.sKey,r.gi,r.pi);}}>
+                <div className="sr-row"><div><div className="sr-name">{r.item.size}</div><div className="sr-sub">{r.subName} — {r.item.dim}</div></div>
+                <div className={r.item.price!==null?"p-price":"p-price consultar"}>{fmt(r.item.price)}</div></div>
+              </div>))}
+            </div>
+          )}
+        </div>
         <div className="header-actions">
-          <button className={`icon-btn ${showS?"active":""}`} onClick={()=>{setShowS(!showS);setQ("");if(v===V.CART)setV(V.HOME);}}>{showS?"✕":"🔍"}</button>
+          <button className={`icon-btn mobile-only ${showS?"active":""}`} onClick={()=>{setShowS(!showS);setQ("");if(v===V.CART)setV(V.HOME);}}>{showS?"✕":"🔍"}</button>
           <button className={`icon-btn ${v===V.CART?"active":""}`} onClick={goCart}>
             🛒{cartCount>0&&<span className={`cart-badge ${badgePop?"pop":""}`}>{cartCount}</span>}
           </button>
+          <span className="cart-label" onClick={goCart} style={{cursor:'pointer'}}>Mi Carrito</span>
         </div>
       </div>
-      {showS&&<input className="search-box" placeholder='Buscar producto... ej: "1/2", "3mm", "SCH40"' value={q} onChange={e=>setQ(e.target.value)} autoFocus/>}
-      {!showS&&v!==V.HOME&&v!==V.CART&&(<nav className="nav">
+      {showS&&<input className="search-box mobile-only" placeholder='Buscar producto... ej: "1/2", "3mm", "SCH40"' value={q} onChange={e=>setQ(e.target.value)} autoFocus/>}
+      {(isDesktop||!showS)&&v!==V.HOME&&v!==V.CART&&(<nav className="nav">
         <button className="nav-btn active" onClick={home}>Inicio</button>
         {gk&&<><span className="nav-sep">›</span><button className="nav-btn" onClick={()=>goG(gk)}>{P[gk]?.name}</button></>}
         {sk&&v>=V.SUB&&<><span className="nav-sep">›</span><button className="nav-btn" onClick={()=>goS(gk,sk)}>{P[gk]?.subcategories[sk]?.name}</button></>}
       </nav>)}
     </header>
     <main className="body">
-      {showS&&q.trim()?renderSearch():<>
-        {v===V.HOME&&renderHome()}
-        {v===V.GROUP&&renderGroup()}
-        {v===V.SUB&&renderSub()}
-        {v===V.PROD&&renderProd()}
-        {v===V.CART&&renderCart()}
-      </>}
+      {showS&&q.trim()&&!isDesktop?renderSearch():(
+        <div className={v!==V.HOME&&v!==V.CART?"desktop-layout":""}>
+          {v!==V.HOME&&v!==V.CART&&(
+            <Sidebar currentGk={gk} currentSk={sk} onGoG={goG} onGoS={goS} onHome={home}/>
+          )}
+          <div className="desktop-content">
+            {v===V.HOME&&renderHome()}
+            {v===V.GROUP&&renderGroup()}
+            {v===V.SUB&&renderSub()}
+            {v===V.PROD&&renderProd()}
+            {v===V.CART&&renderCart()}
+          </div>
+        </div>
+      )}
     </main>
-    <div className="footer"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD sujetos a Tasa BCV</p>{bcvRate&&<p style={{color:"#2ecc40",marginTop:4}}>💱 Tasa BCV: {bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})} Bs/$</p>}</div>
+    <footer className="footer">
+      <div className="footer-grid">
+        <div className="footer-col"><div className="footer-logo">LADA</div><p className="footer-desc">Materiales y Construcción. Catálogo completo de productos de acero y materiales de construcción para la industria venezolana.</p></div>
+        <div className="footer-col"><div className="footer-heading">Categorías</div>{Object.entries(P).map(([key,g])=>(<button key={key} className="footer-link" onClick={()=>goG(key)}>{g.icon} {g.name}</button>))}</div>
+        <div className="footer-col"><div className="footer-heading">Contacto</div><p className="footer-link" style={{cursor:'default'}}>Consultas y pedidos</p><p className="footer-link" style={{cursor:'default'}}>por WhatsApp</p></div>
+        <div className="footer-col">{bcvRate&&<div className="footer-bcv">💱 Tasa BCV: {bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})} Bs/$</div>}<div className="footer-copyright"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD sujetos a Tasa BCV</p></div></div>
+      </div>
+      <div className="footer-copyright mobile-only"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD sujetos a Tasa BCV</p>{bcvRate&&<p style={{color:"#2ecc40",marginTop:4}}>💱 Tasa BCV: {bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})} Bs/$</p>}</div>
+    </footer>
     {renderModal()}
   </div>);
 }
