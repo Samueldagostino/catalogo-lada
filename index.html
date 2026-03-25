@@ -402,6 +402,27 @@
   }
   .mobile-quick-add:active { background: var(--bg-accent-active); }
 
+  /* Quick quantity preset buttons */
+  .qty-presets { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .qty-preset-btn {
+    padding: 6px 12px; border-radius: 6px; border: 1px solid var(--c-accent-border-half);
+    background: var(--bg-row); color: var(--c-text-mid); font-size: 13px; font-weight: 700;
+    font-family: inherit; cursor: pointer; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .qty-preset-btn:hover { background: var(--bg-accent-hover); border-color: var(--c-accent-dark); color: var(--c-accent); }
+  .qty-preset-btn:active { background: var(--bg-accent-active); }
+  .qty-preset-btn.selected { background: var(--bg-accent-hover); border-color: var(--c-accent); color: var(--c-accent); }
+
+  /* Table quick-qty presets (compact) */
+  .table-qty-presets { display: flex; gap: 3px; margin-top: 4px; }
+  .table-preset-btn {
+    padding: 2px 6px; border-radius: 3px; border: 1px solid var(--c-accent-border-half);
+    background: var(--bg-row); color: var(--c-text-dim); font-size: 10px; font-weight: 700;
+    font-family: inherit; cursor: pointer; transition: all 0.15s;
+  }
+  .table-preset-btn:hover { background: var(--bg-accent-hover); color: var(--c-accent); }
+
   /* Utility classes */
   .desktop-only { display: none !important; }
   .mobile-only { }
@@ -549,7 +570,7 @@
     .product-table { display: table; width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
     .product-table thead { position: sticky; top: 80px; z-index: 10; }
     .product-table th { background: var(--bg-row); color: var(--c-text-dim); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--c-accent-dark); white-space: nowrap; }
-    .product-table th:nth-child(4), .product-table th:nth-child(5) { text-align: right; }
+    .product-table th:nth-child(4) { text-align: right; }
     .product-table th:last-child { text-align: center; }
     .group-header-row td { background: var(--bg-accent-subtle); color: var(--c-accent); font-size: 13px; font-weight: 700; padding: 8px 12px; border-bottom: 1px solid var(--c-accent-border-light); }
     .table-row { cursor: pointer; transition: background 0.15s; }
@@ -861,7 +882,6 @@ function App(){
     <div className="stats-bar">
       <div className="stat-item"><div className="stat-val">{totalProducts}</div><div className="stat-label">Productos</div></div>
       <div className="stat-item"><div className="stat-val">{totalCats}</div><div className="stat-label">Categorías</div></div>
-      {bcvRate&&<div className="stat-item"><div className="stat-val">{bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})}</div><div className="stat-label">Tasa BCV Bs/$</div></div>}
     </div>
     <div className="home-intro"><p>Catálogo completo de productos de acero y construcción</p></div>
     <div className="cat-grid">
@@ -893,23 +913,23 @@ function App(){
     <div className="subcat-header"><Img type={sub.image} sz={isDesktop?100:72}/><h2 className="section-title">{sub.name}</h2></div>
     {isDesktop?(
       <table className="product-table" style={{display:'table'}}>
-        <thead><tr><th>Medida</th><th>Dimensión</th><th>Grupo</th><th>Precio USD</th>{bcvRate&&<th>Precio Bs</th>}<th>Cantidad</th><th></th></tr></thead>
+        <thead><tr><th>Medida</th><th>Dimensión</th><th>Grupo</th><th>Precio USD</th><th>Cantidad</th><th></th></tr></thead>
         <tbody>
         {sub.groups.map((gr,gi)=>(<React.Fragment key={gi}>
-          <tr className="group-header-row"><td colSpan={bcvRate?7:6}>{gr.label}</td></tr>
+          <tr className="group-header-row"><td colSpan={6}>{gr.label}</td></tr>
           {gr.items.map((item,pi)=>{const qKey=`${sk}-${gi}-${pi}`;const tq=getTableQty(qKey);return(<tr key={pi} className="table-row" onClick={()=>goP(gk,sk,gi,pi)}>
             <td className="td-size">{item.size}</td>
             <td className="td-dim">{item.dim}</td>
             <td className="td-group">{gr.label}</td>
             <td className={item.price!==null?"td-price":"td-price consultar"}>{fmt(item.price)}</td>
-            {bcvRate&&<td className="td-price-bs">{item.price!==null?(item.price*bcvRate).toLocaleString("es-VE",{minimumFractionDigits:2})+" Bs":"—"}</td>}
-            <td style={{textAlign:'center'}} onClick={e=>e.stopPropagation()}>{item.price!==null&&(
+            <td style={{textAlign:'center'}} onClick={e=>e.stopPropagation()}>{item.price!==null&&(<div>
               <div className="table-qty-wrap">
                 <button className="table-qty-btn" onClick={()=>setTableQty(qKey,tq-1)}>−</button>
                 <input type="number" className="table-qty-input" value={tq} min="1" onChange={e=>setTableQty(qKey,e.target.value)} onClick={e=>e.stopPropagation()} onFocus={e=>{e.stopPropagation();e.target.select();}}/>
                 <button className="table-qty-btn" onClick={()=>setTableQty(qKey,tq+1)}>+</button>
               </div>
-            )}</td>
+              <div className="table-qty-presets">{[10,20,50,100].map(n=>(<button key={n} className="table-preset-btn" onClick={()=>setTableQty(qKey,n)}>{n}</button>))}</div>
+            </div>)}</td>
             <td style={{textAlign:'center'}}><button className="table-action-btn" onClick={(e)=>{e.stopPropagation();if(item.price!==null)addToCart(sub.name,item,tq,gk,sk);else goP(gk,sk,gi,pi);}}>{item.price!==null?`+ Agregar ${tq>1?tq:''}`:"Ver"}</button></td>
           </tr>);})}
         </React.Fragment>))}
@@ -946,13 +966,16 @@ function App(){
           <h2 className="detail-name">{sub.name}</h2>
           <p className="detail-sub">{item.size} — {item.dim}</p>
           <div className={item.price!==null?"detail-price":"detail-price consultar"}>{fmt(item.price)}</div>
-          <p className="detail-iva">IVA incluido · por unidad{bcvRate&&item.price!==null&&<span style={{display:"block",marginTop:4,color:"var(--c-text-muted)"}}> ≈ {(item.price*bcvRate).toLocaleString("es-VE",{minimumFractionDigits:2})} Bs (Tasa BCV: {bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})})</span>}</p>
+          <p className="detail-iva">IVA incluido · por unidad</p>
           <div className="detail-spec"><span className="spec-label">Medida</span><span className="spec-val">{item.size}</span></div>
           <div className="detail-spec"><span className="spec-label">Dimensión / Largo</span><span className="spec-val">{item.dim}</span></div>
           <div className="detail-spec"><span className="spec-label">Grupo</span><span className="spec-val">{gr.label}</span></div>
           <div className="detail-spec"><span className="spec-label">Categoría</span><span className="spec-val">{g.name}</span></div>
           <div className="qty-section">
             <div className="qty-label">Cantidad (piezas)</div>
+            <div className="qty-presets">
+              {[10,20,50,100].map(n=>(<button key={n} className={`qty-preset-btn ${qtyNum===n?'selected':''}`} onClick={()=>setQty(n)}>{n}</button>))}
+            </div>
             <div className="qty-row">
               <button className="qty-btn" onClick={()=>setQty(Math.max(1,qty-1))} disabled={qty<=1}>−</button>
               <input type="number" className="qty-input" value={qty} min="1" onChange={e=>{const v=e.target.value;if(v===''){setQty('');return;}const n=parseInt(v);if(!isNaN(n)&&n>0)setQty(n);}} onBlur={()=>{if(!qty||qty<1)setQty(1);}} onFocus={e=>e.target.select()}/>
@@ -1009,8 +1032,7 @@ function App(){
         <div className="cart-summary-row"><span className="cart-summary-label">Productos</span><span className="cart-summary-val">{cartCount} pza</span></div>
         <div className="cart-summary-row"><span className="cart-summary-label">Artículos diferentes</span><span className="cart-summary-val">{cart.length}</span></div>
         <div className="cart-total-row"><span className="cart-total-label">TOTAL</span><span className="cart-total-val">${cartTotal.toLocaleString("es-VE",{minimumFractionDigits:2})}</span></div>
-        <div className="cart-iva-note">IVA incluido</div>
-        <div className="bcv-note"><span className="bcv-icon">💱</span><div className="bcv-text">Precios sujetos a <strong>Tasa BCV</strong> del día.{bcvRate&&<> Tasa actual: <strong>{bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})} Bs/$</strong>.</>} El monto final en bolívares se calcula al momento de la compra según la tasa vigente del Banco Central de Venezuela.</div></div>
+        <div className="cart-iva-note">IVA incluido · Precios en USD</div>
         <button className="cart-checkout-btn" onClick={()=>{setShowModal(true);setCopied(false);}}>📋 Enviar pedido</button>
         <button className="continue-btn" onClick={home}>Seguir comprando</button>
         <button className="cart-clear-btn" onClick={()=>{if(window.confirm('¿Estás seguro que deseas vaciar el carrito? Se eliminarán todos los productos.'))clearCart();}}>Vaciar carrito</button>
@@ -1102,9 +1124,9 @@ function App(){
         <div className="footer-col"><div className="footer-logo">LADA</div><p className="footer-desc">Materiales y Construcción. Catálogo completo de productos de acero y materiales de construcción para la industria venezolana.</p></div>
         <div className="footer-col"><div className="footer-heading">Categorías</div>{Object.entries(P).map(([key,g])=>(<button key={key} className="footer-link" onClick={()=>goG(key)}>{g.icon} {g.name}</button>))}</div>
         <div className="footer-col"><div className="footer-heading">Contacto</div><p className="footer-link" style={{cursor:'default'}}>Consultas y pedidos</p><p className="footer-link" style={{cursor:'default'}}>por WhatsApp</p></div>
-        <div className="footer-col">{bcvRate&&<div className="footer-bcv">💱 Tasa BCV: {bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})} Bs/$</div>}<div className="footer-copyright"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD sujetos a Tasa BCV</p></div></div>
+        <div className="footer-col"><div className="footer-copyright"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD</p></div></div>
       </div>
-      <div className="footer-copyright mobile-only"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD sujetos a Tasa BCV</p>{bcvRate&&<p style={{color:"var(--c-accent)",marginTop:4}}>💱 Tasa BCV: {bcvRate.toLocaleString("es-VE",{minimumFractionDigits:2})} Bs/$</p>}</div>
+      <div className="footer-copyright mobile-only"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD</p></div>
     </footer>
     {renderModal()}
   </div>);
