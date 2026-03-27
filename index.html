@@ -973,11 +973,12 @@ function App(){
     const h=now.getHours();
     const pad=(n)=>String(n).padStart(2,'0');
     const fmtDate=(d)=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+    const fmtTime=(d)=>{const hr=d.getHours();const ampm=hr>=12?'PM':'AM';const h12=hr%12||12;return`${h12}:${pad(d.getMinutes())} ${ampm}`;};
     if(h<17){
-      return{validUntil:`hoy ${fmtDate(now)} a las 4:00 PM`,note:`Cotización generada el ${fmtDate(now)} a las ${pad(h)}:${pad(now.getMinutes())}. Precios válidos hasta el cierre del día de hoy (4:00 PM).`};
+      return{validUntil:`hoy ${fmtDate(now)} a las 4:00 PM`,note:`Cotización generada el ${fmtDate(now)} a las ${fmtTime(now)}. Precios válidos hasta el cierre del día de hoy (4:00 PM).`};
     }else{
       const tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);
-      return{validUntil:`${fmtDate(tomorrow)} a las 4:00 PM`,note:`Cotización generada el ${fmtDate(now)} a las ${pad(h)}:${pad(now.getMinutes())} (después del cierre). Precios garantizados hasta el ${fmtDate(tomorrow)} a las 4:00 PM.`};
+      return{validUntil:`${fmtDate(tomorrow)} a las 4:00 PM`,note:`Cotización generada el ${fmtDate(now)} a las ${fmtTime(now)} (después del cierre). Precios garantizados hasta el ${fmtDate(tomorrow)} a las 4:00 PM.`};
     }
   };
 
@@ -987,7 +988,8 @@ function App(){
     const validity=getPriceValidity();
     const now=new Date();
     const pad=(n)=>String(n).padStart(2,'0');
-    const dateStr=`${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const h12=now.getHours()%12||12;const ampm=now.getHours()>=12?'PM':'AM';
+    const dateStr=`${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${h12}:${pad(now.getMinutes())} ${ampm}`;
 
     let rows='';
     cart.forEach((c,i)=>{
@@ -1260,6 +1262,7 @@ function App(){
         <div className="cart-total-row"><span className="cart-total-label">TOTAL</span><span className="cart-total-val">{formatPrice(cartTotal)}</span></div>
         <div className="cart-iva-note">IVA incluido</div>
         <button className="cart-checkout-btn" onClick={()=>{setShowModal(true);setCopied(false);}}>📋 Enviar pedido</button>
+        <button className="modal-pdf-btn" onClick={downloadPDF} style={{marginTop:12}}>📄 Descargar PDF / Imprimir</button>
         <button className="continue-btn" onClick={home}>Seguir comprando</button>
         <button className="cart-clear-btn" onClick={()=>{if(window.confirm('¿Estás seguro que deseas vaciar el carrito? Se eliminarán todos los productos.'))clearCart();}}>Vaciar carrito</button>
       </div>
