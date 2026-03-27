@@ -335,6 +335,17 @@
     cursor: pointer; font-family: inherit; margin-top: 10px; transition: all 0.15s;
   }
   .modal-copy-btn:hover { background: var(--bg-accent-subtle); }
+  .modal-pdf-btn {
+    width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--c-danger);
+    background: none; color: var(--c-danger); font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit; margin-top: 10px; transition: all 0.15s;
+  }
+  .modal-pdf-btn:hover { background: rgba(231,76,60,0.08); }
+  .modal-validity {
+    background: var(--bg-bcv); border: 1px solid var(--c-accent-border-half); border-radius: 8px;
+    padding: 10px 14px; margin-top: 12px; font-size: 12px; color: var(--c-text-muted); line-height: 1.5;
+  }
+  .modal-validity strong { color: var(--c-accent); }
   .modal-close {
     width: 100%; padding: 10px; border: none; background: none;
     color: var(--c-text-dim); font-size: 13px; cursor: pointer; font-family: inherit; margin-top: 8px;
@@ -952,7 +963,96 @@ function App(){
     if(showBs)totalStr+=`\n(Bs ${formatNum(cartTotal*bcvRate)})`;
     t+=`\n━━━━━━━━━━━━━━\n${totalStr}\n(IVA incluido)\nProductos: ${cartCount} pza`;
     if(bcvRate)t+=`\n\nTasa BCV: ${formatNum(bcvRate)} Bs/Ref`;
+    const v=getPriceValidity();
+    t+=`\n\n⏰ ${v.note}`;
     return t;
+  };
+
+  const getPriceValidity=()=>{
+    const now=new Date();
+    const h=now.getHours();
+    const pad=(n)=>String(n).padStart(2,'0');
+    const fmtDate=(d)=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+    if(h<17){
+      return{validUntil:`hoy ${fmtDate(now)} a las 4:00 PM`,note:`Cotización generada el ${fmtDate(now)} a las ${pad(h)}:${pad(now.getMinutes())}. Precios válidos hasta el cierre del día de hoy (4:00 PM).`};
+    }else{
+      const tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);
+      return{validUntil:`${fmtDate(tomorrow)} a las 4:00 PM`,note:`Cotización generada el ${fmtDate(now)} a las ${pad(h)}:${pad(now.getMinutes())} (después del cierre). Precios garantizados hasta el ${fmtDate(tomorrow)} a las 4:00 PM.`};
+    }
+  };
+
+  const downloadPDF=()=>{
+    const cur=currency||'ref';
+    const showBs=(cur==='bs'||cur==='ambas')&&bcvRate;
+    const validity=getPriceValidity();
+    const now=new Date();
+    const pad=(n)=>String(n).padStart(2,'0');
+    const dateStr=`${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+    let rows='';
+    cart.forEach((c,i)=>{
+      const q=typeof c.qty==='number'?c.qty:1;const sub=c.price*q;
+      let priceCell=`Ref ${formatNum(c.price)}`;
+      let totalCell=`Ref ${formatNum(sub)}`;
+      if(showBs){priceCell+=`<br><small style="color:#666">Bs ${formatNum(c.price*bcvRate)}</small>`;totalCell+=`<br><small style="color:#666">Bs ${formatNum(sub*bcvRate)}</small>`;}
+      rows+=`<tr><td style="padding:8px;border-bottom:1px solid #ddd">${i+1}</td><td style="padding:8px;border-bottom:1px solid #ddd"><strong>${c.subName}</strong><br><span style="color:#555">${c.size} — ${c.dim}</span></td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:center">${q}</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${priceCell}</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:right"><strong>${totalCell}</strong></td></tr>`;
+    });
+
+    let totalDisplay=`Ref ${formatNum(cartTotal)}`;
+    if(showBs)totalDisplay+=` / Bs ${formatNum(cartTotal*bcvRate)}`;
+
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pedido LADA - ${dateStr}</title><style>
+      @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&display=swap');
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Archivo',sans-serif;color:#1a1a1a;padding:40px;max-width:800px;margin:0 auto}
+      .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;padding-bottom:20px;border-bottom:3px solid #1a7a3a}
+      .logo{font-size:36px;font-weight:900;color:#1a7a3a;letter-spacing:6px}
+      .subtitle{font-size:11px;color:#666;letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+      .doc-info{text-align:right;font-size:12px;color:#555}
+      .doc-info strong{color:#1a1a1a}
+      h2{font-size:20px;color:#1a7a3a;margin-bottom:16px}
+      table{width:100%;border-collapse:collapse;margin-bottom:24px}
+      th{background:#1a7a3a;color:#fff;padding:10px 8px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
+      th:nth-child(3),th:nth-child(4),th:nth-child(5){text-align:center}
+      th:nth-child(4),th:nth-child(5){text-align:right}
+      .total-section{text-align:right;padding:16px 0;border-top:3px solid #1a7a3a;margin-top:8px}
+      .total-label{font-size:14px;color:#555}
+      .total-val{font-size:28px;font-weight:900;color:#1a7a3a}
+      .total-items{font-size:13px;color:#666;margin-top:4px}
+      .validity{background:#f0f7f1;border:1px solid #c3e0c7;border-radius:8px;padding:16px;margin-top:24px;font-size:13px;color:#2a5a30}
+      .validity strong{color:#1a7a3a}
+      .footer-note{margin-top:24px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#888;text-align:center}
+      .iva-note{font-size:12px;color:#666;text-align:right;margin-top:4px}
+      ${showBs?'.bcv-info{font-size:12px;color:#666;text-align:right;margin-top:8px}':''}
+      @media print{body{padding:20px}@page{margin:15mm}}
+    </style></head><body>
+    <div class="header">
+      <div><div class="logo">LADA</div><div class="subtitle">Materiales y Construcción</div></div>
+      <div class="doc-info"><strong>COTIZACIÓN</strong><br>Fecha: ${dateStr}<br>Productos: ${cartCount} pza<br>Artículos: ${cart.length}</div>
+    </div>
+    <h2>Detalle del Pedido</h2>
+    <table><thead><tr><th>#</th><th>Producto</th><th style="text-align:center">Cant.</th><th style="text-align:right">Precio Unit.</th><th style="text-align:right">Subtotal</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="total-section">
+      <div class="total-label">TOTAL</div>
+      <div class="total-val">${totalDisplay}</div>
+      <div class="total-items">${cartCount} piezas · ${cart.length} artículos diferentes</div>
+      <div class="iva-note">IVA incluido</div>
+      ${showBs?`<div class="bcv-info">Tasa BCV aplicada: ${formatNum(bcvRate)} Bs/Ref</div>`:''}
+    </div>
+    <div class="validity">
+      <strong>⏰ Vigencia de precios:</strong><br>
+      ${validity.note}<br><br>
+      <strong>Precios válidos hasta: ${validity.validUntil}</strong><br>
+      Después de esta fecha y hora, los precios están sujetos a cambios según la tasa BCV vigente.
+    </div>
+    <div class="footer-note">
+      LADA — Materiales y Construcción · Todos los precios incluyen IVA<br>
+      Este documento es una cotización informativa. Para confirmar su pedido, comuníquese vía WhatsApp.
+    </div>
+    </body></html>`;
+
+    const w=window.open('','_blank','width=800,height=600');
+    if(w){w.document.write(html);w.document.close();setTimeout(()=>{w.print();},500);}
   };
 
   useEffect(()=>{
@@ -1178,13 +1278,16 @@ function App(){
   const renderModal=()=>{
     if(!showModal)return null;
     const text=buildOrderText();
+    const validity=getPriceValidity();
     const waUrl=`https://wa.me/?text=${encodeURIComponent(text)}`;
     return(<div className="modal-overlay" onClick={()=>setShowModal(false)}>
       <div className="modal" onClick={e=>e.stopPropagation()}>
         <div className="modal-title">📋 Resumen del Pedido</div>
-        <div className="modal-sub">Revisa tu pedido y envíalo por WhatsApp o copia el texto para compartir.</div>
+        <div className="modal-sub">Revisa tu pedido y envíalo por WhatsApp, descárgalo como PDF, o copia el texto.</div>
         <div className="modal-summary">{text}</div>
+        <div className="modal-validity"><strong>⏰ Vigencia de precios:</strong> {validity.note}</div>
         <a href={waUrl} target="_blank" rel="noopener noreferrer" className="modal-wa-btn">📱 Enviar por WhatsApp</a>
+        <button className="modal-pdf-btn" onClick={downloadPDF}>📄 Descargar PDF / Imprimir</button>
         <button className="modal-copy-btn" onClick={()=>{navigator.clipboard?.writeText(text);setCopied(true);setTimeout(()=>setCopied(false),2000);}}>
           {copied?"✓ Copiado":"📋 Copiar al portapapeles"}
         </button>
