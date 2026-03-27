@@ -656,6 +656,33 @@
     .hide-on-desktop { display: none !important; }
   }
 
+  /* Partners / brands section */
+  .partners-section { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--c-accent-border-light); }
+  .partners-title { font-size: 18px; font-weight: 800; color: var(--c-accent); text-align: center; margin-bottom: 8px; }
+  .partners-sub { font-size: 13px; color: var(--c-text-muted); text-align: center; margin-bottom: 24px; line-height: 1.5; }
+  .partners-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .partner-card {
+    background: var(--bg-card); border: 1px solid var(--c-accent-border-light); border-radius: 12px;
+    padding: 16px 20px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; min-width: 140px; min-height: 80px;
+  }
+  .partner-card:hover { border-color: var(--c-accent-border-half); transform: translateY(-2px); box-shadow: var(--shadow-float); }
+  .partner-logo { width: 140px; height: auto; display: block; }
+  .partner-placeholder {
+    flex-direction: column; gap: 4px; border-style: dashed;
+    border-color: var(--c-accent-border-light); opacity: 0.5;
+  }
+  .partner-plus { font-size: 24px; color: var(--c-text-dim); font-weight: 300; }
+  .partner-coming { font-size: 11px; color: var(--c-text-faint); font-weight: 600; }
+
+  @media (min-width: 1024px) {
+    .partners-section { margin-top: 48px; padding-top: 40px; }
+    .partners-title { font-size: 24px; }
+    .partners-sub { font-size: 15px; }
+    .partner-logo { width: 160px; }
+    .partner-card { padding: 20px 28px; }
+  }
+
   /* Currency popup */
   .currency-popup-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -1107,9 +1134,35 @@ function App(){
       </div>);
     })}
     </div>
-  </div>);
-
-  const renderGroup=()=>{const g=P[gk];if(!g)return null;return(<div className="fade-in">
+    <div className="partners-section">
+      <h3 className="partners-title">Marcas que Distribuimos</h3>
+      <p className="partners-sub">Trabajamos con los mejores proveedores de la industria para garantizar la calidad de nuestros productos</p>
+      <div className="partners-grid">
+        <div className="partner-card">
+          <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg" className="partner-logo">
+            <rect x="0" y="0" width="200" height="80" rx="4" fill="#FEBD17"/>
+            <rect x="8" y="14" width="184" height="3" fill="#1a1a1a"/>
+            <rect x="8" y="63" width="184" height="3" fill="#1a1a1a"/>
+            <text x="100" y="52" textAnchor="middle" fontFamily="Arial Black,Arial,sans-serif" fontWeight="900" fontSize="38" fill="#1a1a1a" letterSpacing="-1">DeWALT</text>
+          </svg>
+        </div>
+        <div className="partner-card">
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="partner-logo">
+            <polygon points="100,5 155,50 100,95 45,50" fill="#F57F20"/>
+            <polygon points="45,50 0,15 45,15" fill="#1B3A7B"/>
+            <polygon points="45,50 0,85 0,15" fill="#1B3A7B"/>
+            <polygon points="155,50 200,15 200,85" fill="#1B3A7B"/>
+            <polygon points="155,50 200,85 155,85" fill="#1B3A7B"/>
+            <rect x="30" y="38" width="140" height="28" rx="1" fill="#fff" stroke="#F57F20" strokeWidth="1.5"/>
+            <text x="100" y="58" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="700" fontSize="22" fill="#2a2a2a" letterSpacing="0.5">solintex</text>
+          </svg>
+        </div>
+        <div className="partner-card partner-placeholder"><span className="partner-plus">+</span><span className="partner-coming">Próximamente</span></div>
+        <div className="partner-card partner-placeholder"><span className="partner-plus">+</span><span className="partner-coming">Próximamente</span></div>
+        <div className="partner-card partner-placeholder"><span className="partner-plus">+</span><span className="partner-coming">Próximamente</span></div>
+      </div>
+    </div>
+  </div>);=()=>{const g=P[gk];if(!g)return null;return(<div className="fade-in">
     <button className="back-btn hide-on-desktop" onClick={home}>← Categorías</button>
     <h2 className="section-title">{g.icon} {g.name}</h2>
     <div className="sub-grid">
