@@ -955,14 +955,14 @@ function App(){
     let t="🛒 *Pedido LADA*\n━━━━━━━━━━━━━━\n";
     cart.forEach((c,i)=>{
       const q=typeof c.qty==='number'?c.qty:1;const sub=(c.price*q);
-      let line=`${q} pza × Ref ${formatNum(c.price)} = *Ref ${formatNum(sub)}*`;
-      if(showBs)line+=`\n   (Bs ${formatNum(sub*bcvRate)})`;
+      let line=`${q} piezas × Referencia ${formatNum(c.price)} = *Referencia ${formatNum(sub)}*`;
+      if(showBs)line+=`\n   (Bolívares ${formatNum(sub*bcvRate)})`;
       t+=`\n${i+1}. *${c.subName}*\n   ${c.size} — ${c.dim}\n   ${line}\n`;
     });
-    let totalStr=`*TOTAL: Ref ${formatNum(cartTotal)}*`;
-    if(showBs)totalStr+=`\n(Bs ${formatNum(cartTotal*bcvRate)})`;
-    t+=`\n━━━━━━━━━━━━━━\n${totalStr}\n(IVA incluido)\nProductos: ${cartCount} pza`;
-    if(bcvRate)t+=`\n\nTasa BCV: ${formatNum(bcvRate)} Bs/Ref`;
+    let totalStr=`*TOTAL: Referencia ${formatNum(cartTotal)}*`;
+    if(showBs)totalStr+=`\n(Bolívares ${formatNum(cartTotal*bcvRate)})`;
+    t+=`\n━━━━━━━━━━━━━━\n${totalStr}\n(IVA incluido)\nProductos: ${cartCount} piezas`;
+    if(bcvRate)t+=`\n\nTasa BCV: ${formatNum(bcvRate)} Bolívares por Referencia`;
     const v=getPriceValidity();
     t+=`\n\n⏰ ${v.note}`;
     return t;
@@ -994,14 +994,14 @@ function App(){
     let rows='';
     cart.forEach((c,i)=>{
       const q=typeof c.qty==='number'?c.qty:1;const sub=c.price*q;
-      let priceCell=`Ref ${formatNum(c.price)}`;
-      let totalCell=`Ref ${formatNum(sub)}`;
-      if(showBs){priceCell+=`<br><small style="color:#666">Bs ${formatNum(c.price*bcvRate)}</small>`;totalCell+=`<br><small style="color:#666">Bs ${formatNum(sub*bcvRate)}</small>`;}
+      let priceCell=`Referencia ${formatNum(c.price)}`;
+      let totalCell=`Referencia ${formatNum(sub)}`;
+      if(showBs){priceCell+=`<br><small style="color:#666">Bolívares ${formatNum(c.price*bcvRate)}</small>`;totalCell+=`<br><small style="color:#666">Bolívares ${formatNum(sub*bcvRate)}</small>`;}
       rows+=`<tr><td style="padding:8px;border-bottom:1px solid #ddd">${i+1}</td><td style="padding:8px;border-bottom:1px solid #ddd"><strong>${c.subName}</strong><br><span style="color:#555">${c.size} — ${c.dim}</span></td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:center">${q}</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${priceCell}</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:right"><strong>${totalCell}</strong></td></tr>`;
     });
 
-    let totalDisplay=`Ref ${formatNum(cartTotal)}`;
-    if(showBs)totalDisplay+=` / Bs ${formatNum(cartTotal*bcvRate)}`;
+    let totalDisplay=`Referencia ${formatNum(cartTotal)}`;
+    if(showBs)totalDisplay+=` / Bolívares ${formatNum(cartTotal*bcvRate)}`;
 
     const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pedido LADA - ${dateStr}</title><style>
       @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&display=swap');
@@ -1030,16 +1030,16 @@ function App(){
     </style></head><body>
     <div class="header">
       <div><div class="logo">LADA</div><div class="subtitle">Materiales y Construcción</div></div>
-      <div class="doc-info"><strong>COTIZACIÓN</strong><br>Fecha: ${dateStr}<br>Productos: ${cartCount} pza<br>Artículos: ${cart.length}</div>
+      <div class="doc-info"><strong>COTIZACIÓN</strong><br>Fecha: ${dateStr}<br>Productos: ${cartCount} piezas<br>Artículos: ${cart.length}</div>
     </div>
     <h2>Detalle del Pedido</h2>
-    <table><thead><tr><th>#</th><th>Producto</th><th style="text-align:center">Cant.</th><th style="text-align:right">Precio Unit.</th><th style="text-align:right">Subtotal</th></tr></thead><tbody>${rows}</tbody></table>
+    <table><thead><tr><th>#</th><th>Producto</th><th style="text-align:center">Cantidad</th><th style="text-align:right">Precio Unitario</th><th style="text-align:right">Subtotal</th></tr></thead><tbody>${rows}</tbody></table>
     <div class="total-section">
       <div class="total-label">TOTAL</div>
       <div class="total-val">${totalDisplay}</div>
       <div class="total-items">${cartCount} piezas · ${cart.length} artículos diferentes</div>
       <div class="iva-note">IVA incluido</div>
-      ${showBs?`<div class="bcv-info">Tasa BCV aplicada: ${formatNum(bcvRate)} Bs/Ref</div>`:''}
+      ${showBs?`<div class="bcv-info">Tasa BCV aplicada: ${formatNum(bcvRate)} Bolívares por Referencia</div>`:''}
     </div>
     <div class="validity">
       <strong>⏰ Vigencia de precios:</strong><br>
@@ -1074,12 +1074,13 @@ function App(){
   },[q]);
 
   const formatNum=(n)=>n.toLocaleString("es-VE",{minimumFractionDigits:n%1!==0?2:0});
-  const formatPrice=(p)=>{
+  const formatPrice=(p,full)=>{
     if(p===null)return"Consultar";
     const cur=currency||'ref';
-    const refStr='Ref '+formatNum(p);
+    const rl=full?'Referencia ':'Ref ';const bl=full?'Bolívares ':'Bs ';
+    const refStr=rl+formatNum(p);
     if(cur==='ref')return refStr;
-    const bsStr=bcvRate?'Bs '+formatNum(p*bcvRate):'Bs —';
+    const bsStr=bcvRate?bl+formatNum(p*bcvRate):(bl+'—');
     if(cur==='bs')return bsStr;
     return refStr+' / '+bsStr;
   };
@@ -1193,7 +1194,7 @@ function App(){
         <div className="detail-info">
           <h2 className="detail-name">{sub.name}</h2>
           <p className="detail-sub">{item.size} — {item.dim}</p>
-          <div className={item.price!==null?"detail-price":"detail-price consultar"}>{formatPrice(item.price)}</div>
+          <div className={item.price!==null?"detail-price":"detail-price consultar"}>{formatPrice(item.price,true)}</div>
           <p className="detail-iva">IVA incluido · por unidad</p>
           <div className="detail-spec"><span className="spec-label">Medida</span><span className="spec-val">{item.size}</span></div>
           <div className="detail-spec"><span className="spec-label">Dimensión / Largo</span><span className="spec-val">{item.dim}</span></div>
@@ -1208,7 +1209,7 @@ function App(){
               <button className="qty-btn" onClick={()=>setQty(Math.max(1,qtyNum-1))} disabled={qtyNum<=1}>−</button>
               <input type="number" className="qty-input" value={qty} min="1" max="499" onChange={e=>{const v=e.target.value;if(v===''){setQty('');return;}const n=parseInt(v);if(!isNaN(n)&&n>=0)setQty(Math.min(499,Math.max(1,n)));}} onBlur={()=>{if(qty===''||qty<1)setQty(1);}} onFocus={e=>e.target.select()}/>
               <button className="qty-btn" onClick={()=>setQty(Math.min(499,qtyNum+1))} disabled={qtyNum>=499}>+</button>
-              {canAdd&&<div className="qty-total">Total: <span>{formatPrice(lineTotal)}</span></div>}
+              {canAdd&&<div className="qty-total">Total: <span>{formatPrice(lineTotal,true)}</span></div>}
             </div>
             <button className="add-cart-btn" disabled={!canAdd||!qtyNum} onClick={()=>canAdd&&qtyNum&&addToCart(sub.name,item,qtyNum,gk,sk)}>
               {canAdd?`🛒 Agregar ${qtyNum||''} al carrito`:"Precio no disponible"}
@@ -1249,17 +1250,17 @@ function App(){
             <button className="cart-qty-btn" onClick={()=>updateCartQty(c.id,1)} disabled={typeof c.qty==='number'&&c.qty>=499}>+</button>
           </div>
           <div>
-            <div className="cart-item-price">{formatPrice(c.price*(typeof c.qty==='number'?c.qty:0))}</div>
-            <div className="cart-item-unit">{typeof c.qty==='number'?c.qty:'—'} × {formatPrice(c.price)}</div>
+            <div className="cart-item-price">{formatPrice(c.price*(typeof c.qty==='number'?c.qty:0),true)}</div>
+            <div className="cart-item-unit">{typeof c.qty==='number'?c.qty:'—'} × {formatPrice(c.price,true)}</div>
           </div>
         </div>
       </div>))}
       </div>
       <div className="cart-sidebar">
       <div className="cart-summary">
-        <div className="cart-summary-row"><span className="cart-summary-label">Productos</span><span className="cart-summary-val">{cartCount} pza</span></div>
+        <div className="cart-summary-row"><span className="cart-summary-label">Productos</span><span className="cart-summary-val">{cartCount} piezas</span></div>
         <div className="cart-summary-row"><span className="cart-summary-label">Artículos diferentes</span><span className="cart-summary-val">{cart.length}</span></div>
-        <div className="cart-total-row"><span className="cart-total-label">TOTAL</span><span className="cart-total-val">{formatPrice(cartTotal)}</span></div>
+        <div className="cart-total-row"><span className="cart-total-label">TOTAL</span><span className="cart-total-val">{formatPrice(cartTotal,true)}</span></div>
         <div className="cart-iva-note">IVA incluido</div>
         <button className="cart-checkout-btn" onClick={()=>{setShowModal(true);setCopied(false);}}>📋 Enviar pedido</button>
         <button className="modal-pdf-btn" onClick={downloadPDF} style={{marginTop:12}}>📄 Descargar PDF / Imprimir</button>
@@ -1307,16 +1308,16 @@ function App(){
         <div className="modal-title">Selecciona la moneda</div>
         <div className="modal-sub">Elige cómo deseas ver los precios en el catálogo.</div>
         <button className="currency-option" onClick={()=>selectCurrency('ref')}>
-          <div className="currency-label">Ref (Referencia)</div>
-          <div className="currency-example">Ejemplo: Ref {formatNum(ex)}</div>
+          <div className="currency-label">Precio Referencia</div>
+          <div className="currency-example">Ejemplo: Referencia {formatNum(ex)}</div>
         </button>
         <button className="currency-option" onClick={()=>selectCurrency('bs')}>
-          <div className="currency-label">Bs (Bolívares)</div>
-          <div className="currency-example">Ejemplo: Bs {formatNum(bsEx)}</div>
+          <div className="currency-label">Bolívares</div>
+          <div className="currency-example">Ejemplo: Bolívares {formatNum(bsEx)}</div>
         </button>
         <button className="currency-option" onClick={()=>selectCurrency('ambas')}>
-          <div className="currency-label">Ambas</div>
-          <div className="currency-example">Ejemplo: Ref {formatNum(ex)} / Bs {formatNum(bsEx)}</div>
+          <div className="currency-label">Mostrar ambas</div>
+          <div className="currency-example">Ejemplo: Referencia {formatNum(ex)} / Bolívares {formatNum(bsEx)}</div>
         </button>
       </div>
     </div>);
