@@ -904,7 +904,7 @@ function App(){
   const[badgePop,setBadgePop]=useState(false);
   const[bcvRate,setBcvRate]=useState(null);
   const[pricesLoaded,setPricesLoaded]=useState(false);
-  const[theme,setTheme]=useState('dark');
+  const[theme,setTheme]=useState('light');
   const[tableQtys,setTableQtys]=useState({});
   const[mobileQtyOpen,setMobileQtyOpen]=useState(null);
   const[mobileQtyVal,setMobileQtyVal]=useState(1);
@@ -914,6 +914,7 @@ function App(){
   const top=useRef(null);
   const isDesktop=useIsDesktop();
 
+  useEffect(()=>{document.documentElement.className=theme==='light'?'light':'';},[]);
   const toggleTheme=()=>{const next=theme==='dark'?'light':'dark';setTheme(next);document.documentElement.className=next==='light'?'light':'';};
   const selectCurrency=(c)=>{setCurrency(c);try{localStorage.setItem('lada-currency',c);}catch(e){}setShowCurrencyPopup(false);};
   const getTableQty=(key)=>tableQtys[key]===undefined?1:tableQtys[key];
