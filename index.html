@@ -871,7 +871,7 @@ function App(){
   const[mobileQtyOpen,setMobileQtyOpen]=useState(null);
   const[mobileQtyVal,setMobileQtyVal]=useState(1);
   const[currency,setCurrency]=useState(()=>{try{return localStorage.getItem('lada-currency')||null;}catch(e){return null;}});
-  const[showCurrencyPopup,setShowCurrencyPopup]=useState(()=>{try{return !localStorage.getItem('lada-currency');}catch(e){return true;}});
+  const[showCurrencyPopup,setShowCurrencyPopup]=useState(false);
   const[waTooltip,setWaTooltip]=useState(true);
   const top=useRef(null);
   const isDesktop=useIsDesktop();
@@ -916,7 +916,7 @@ function App(){
   const home=()=>{setV(V.HOME);setGk(null);setSk(null);setSel(null);setQ("");setShowS(false);setMobileQtyOpen(null);go();};
   const goG=(k)=>{setGk(k);setV(V.GROUP);setMobileQtyOpen(null);go();};
   const goS=(g,s)=>{setGk(g);setSk(s);setV(V.SUB);setMobileQtyOpen(null);go();};
-  const goP=(g,s,gi,pi)=>{setGk(g);setSk(s);setSel({gi,pi});setQty(1);setAddedMsg(false);setV(V.PROD);setMobileQtyOpen(null);go();};
+  const goP=(g,s,gi,pi)=>{setGk(g);setSk(s);setSel({gi,pi});setQty(1);setAddedMsg(false);setV(V.PROD);setMobileQtyOpen(null);if(!currency)setShowCurrencyPopup(true);go();};
   const goCart=()=>{setV(V.CART);setShowS(false);go();};
 
   const cartCount=cart.reduce((a,c)=>a+(typeof c.qty==='number'?c.qty:0),0);
