@@ -914,9 +914,9 @@ function App(){
 
   const go=()=>top.current?.scrollIntoView({behavior:"smooth"});
   const home=()=>{setV(V.HOME);setGk(null);setSk(null);setSel(null);setQ("");setShowS(false);setMobileQtyOpen(null);go();};
-  const goG=(k)=>{setGk(k);setV(V.GROUP);setMobileQtyOpen(null);go();};
+  const goG=(k)=>{setGk(k);setV(V.GROUP);setMobileQtyOpen(null);if(!currency)setShowCurrencyPopup(true);go();};
   const goS=(g,s)=>{setGk(g);setSk(s);setV(V.SUB);setMobileQtyOpen(null);go();};
-  const goP=(g,s,gi,pi)=>{setGk(g);setSk(s);setSel({gi,pi});setQty(1);setAddedMsg(false);setV(V.PROD);setMobileQtyOpen(null);if(!currency)setShowCurrencyPopup(true);go();};
+  const goP=(g,s,gi,pi)=>{setGk(g);setSk(s);setSel({gi,pi});setQty(1);setAddedMsg(false);setV(V.PROD);setMobileQtyOpen(null);go();};
   const goCart=()=>{setV(V.CART);setShowS(false);go();};
 
   const cartCount=cart.reduce((a,c)=>a+(typeof c.qty==='number'?c.qty:0),0);
