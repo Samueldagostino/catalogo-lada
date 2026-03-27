@@ -1163,7 +1163,9 @@ function App(){
         <div className="partner-card partner-placeholder"><span className="partner-plus">+</span><span className="partner-coming">Próximamente</span></div>
       </div>
     </div>
-  </div>);=()=>{const g=P[gk];if(!g)return null;return(<div className="fade-in">
+  </div>);
+
+  const renderGroup=()=>{const g=P[gk];if(!g)return null;return(<div className="fade-in">
     <button className="back-btn hide-on-desktop" onClick={home}>← Categorías</button>
     <h2 className="section-title">{g.icon} {g.name}</h2>
     <div className="sub-grid">
