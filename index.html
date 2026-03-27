@@ -644,6 +644,73 @@
     /* Back button hidden on desktop when sidebar present */
     .hide-on-desktop { display: none !important; }
   }
+
+  /* Currency popup */
+  .currency-popup-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-overlay); z-index: 210; display: flex;
+    align-items: center; justify-content: center; padding: 20px;
+    animation: fadeIn 0.2s ease-out;
+  }
+  .currency-popup {
+    background: var(--bg-card); border: 1px solid var(--c-accent-dark); border-radius: 16px;
+    padding: 24px; max-width: 380px; width: 100%; transition: background 0.3s;
+  }
+  .currency-option {
+    display: block; width: 100%; padding: 16px; margin-bottom: 10px;
+    border-radius: 10px; border: 1px solid var(--c-accent-border-half);
+    background: var(--bg-row); color: var(--c-text); cursor: pointer;
+    font-family: inherit; text-align: left; transition: all 0.15s;
+  }
+  .currency-option:hover { background: var(--bg-accent-hover); border-color: var(--c-accent); }
+  .currency-option:active { background: var(--bg-accent-active); }
+  .currency-option:last-child { margin-bottom: 0; }
+  .currency-label { font-weight: 800; font-size: 16px; color: var(--c-accent); }
+  .currency-example { font-size: 13px; color: var(--c-text-dim); margin-top: 4px; }
+  .currency-toggle {
+    background: none; border: 1px solid var(--c-accent-border-half);
+    color: var(--c-accent); font-size: 12px; font-weight: 700;
+    padding: 4px 10px; border-radius: 6px; cursor: pointer;
+    font-family: inherit; transition: all 0.15s; white-space: nowrap;
+  }
+  .currency-toggle:hover { background: var(--bg-accent-subtle); border-color: var(--c-accent-dark); }
+
+  /* WhatsApp floating button */
+  .wa-float {
+    position: fixed; bottom: 24px; right: 24px; z-index: 90;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #25D366; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+    animation: waPulse 2s ease-in-out infinite;
+    transition: transform 0.2s; text-decoration: none;
+  }
+  .wa-float:hover { transform: scale(1.1); }
+  .wa-float svg { width: 28px; height: 28px; fill: #fff; }
+  .wa-tooltip {
+    position: absolute; bottom: 100%; right: 0; margin-bottom: 12px;
+    background: var(--bg-card); color: var(--c-text);
+    border: 1px solid var(--c-accent-border-half);
+    padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    white-space: nowrap; box-shadow: var(--shadow-float);
+    animation: fadeIn 0.2s ease-out;
+  }
+  .wa-tooltip::after {
+    content: ''; position: absolute; top: 100%; right: 20px;
+    border: 6px solid transparent; border-top-color: var(--bg-card);
+  }
+  .wa-dismiss {
+    display: inline-block; margin-left: 8px; cursor: pointer;
+    color: var(--c-text-dim); font-weight: 400;
+  }
+  @keyframes waPulse {
+    0%,100% { box-shadow: 0 4px 16px rgba(37,211,102,0.4); }
+    50% { box-shadow: 0 4px 24px rgba(37,211,102,0.7), 0 0 0 8px rgba(37,211,102,0.15); }
+  }
+  @media (max-width: 768px) {
+    .wa-float { width: 48px; height: 48px; bottom: 16px; right: 16px; }
+    .wa-float svg { width: 24px; height: 24px; }
+  }
 </style>
 </head>
 <body>
@@ -803,10 +870,14 @@ function App(){
   const[tableQtys,setTableQtys]=useState({});
   const[mobileQtyOpen,setMobileQtyOpen]=useState(null);
   const[mobileQtyVal,setMobileQtyVal]=useState(1);
+  const[currency,setCurrency]=useState(()=>{try{return localStorage.getItem('lada-currency')||null;}catch(e){return null;}});
+  const[showCurrencyPopup,setShowCurrencyPopup]=useState(()=>{try{return !localStorage.getItem('lada-currency');}catch(e){return true;}});
+  const[waTooltip,setWaTooltip]=useState(true);
   const top=useRef(null);
   const isDesktop=useIsDesktop();
 
   const toggleTheme=()=>{const next=theme==='dark'?'light':'dark';setTheme(next);document.documentElement.className=next==='light'?'light':'';};
+  const selectCurrency=(c)=>{setCurrency(c);try{localStorage.setItem('lada-currency',c);}catch(e){}setShowCurrencyPopup(false);};
   const getTableQty=(key)=>tableQtys[key]===undefined?1:tableQtys[key];
   const setTableQty=(key,val)=>{if(val===''||val===''){setTableQtys(prev=>({...prev,[key]:''}));return;}const n=Math.max(1,Math.min(499,parseInt(val)||1));setTableQtys(prev=>({...prev,[key]:n}));};
   const addToTableQty=(key,amount)=>{const cur=typeof tableQtys[key]==='number'?tableQtys[key]:1;setTableQtys(prev=>({...prev,[key]:Math.min(499,cur+amount)}));};
@@ -839,6 +910,8 @@ function App(){
     }).catch(()=>{/* precios.json not found, use hardcoded defaults */});
   },[]);
 
+  useEffect(()=>{if(waTooltip){const t=setTimeout(()=>setWaTooltip(false),5000);return()=>clearTimeout(t);}},[waTooltip]);
+
   const go=()=>top.current?.scrollIntoView({behavior:"smooth"});
   const home=()=>{setV(V.HOME);setGk(null);setSk(null);setSel(null);setQ("");setShowS(false);setMobileQtyOpen(null);go();};
   const goG=(k)=>{setGk(k);setV(V.GROUP);setMobileQtyOpen(null);go();};
@@ -866,12 +939,19 @@ function App(){
   const clearCart=()=>setCart([]);
 
   const buildOrderText=()=>{
+    const cur=currency||'ref';
+    const showBs=(cur==='bs'||cur==='ambas')&&bcvRate;
     let t="🛒 *Pedido LADA*\n━━━━━━━━━━━━━━\n";
     cart.forEach((c,i)=>{
       const q=typeof c.qty==='number'?c.qty:1;const sub=(c.price*q);
-      t+=`\n${i+1}. *${c.subName}*\n   ${c.size} — ${c.dim}\n   ${q} pza × $${c.price} = *$${sub.toLocaleString("es-VE",{minimumFractionDigits:2})}*\n`;
+      let line=`${q} pza × Ref ${formatNum(c.price)} = *Ref ${formatNum(sub)}*`;
+      if(showBs)line+=`\n   (Bs ${formatNum(sub*bcvRate)})`;
+      t+=`\n${i+1}. *${c.subName}*\n   ${c.size} — ${c.dim}\n   ${line}\n`;
     });
-    t+=`\n━━━━━━━━━━━━━━\n*TOTAL: $${cartTotal.toLocaleString("es-VE",{minimumFractionDigits:2})}*\n(IVA incluido)\nProductos: ${cartCount} pza`;
+    let totalStr=`*TOTAL: Ref ${formatNum(cartTotal)}*`;
+    if(showBs)totalStr+=`\n(Bs ${formatNum(cartTotal*bcvRate)})`;
+    t+=`\n━━━━━━━━━━━━━━\n${totalStr}\n(IVA incluido)\nProductos: ${cartCount} pza`;
+    if(bcvRate)t+=`\n\nTasa BCV: ${formatNum(bcvRate)} Bs/Ref`;
     return t;
   };
 
@@ -891,7 +971,16 @@ function App(){
     setSr(r.slice(0,20));
   },[q]);
 
-  const fmt=(p)=>p===null?"Consultar":`$${p.toLocaleString("es-VE",{minimumFractionDigits:p%1!==0?2:0})}`;
+  const formatNum=(n)=>n.toLocaleString("es-VE",{minimumFractionDigits:n%1!==0?2:0});
+  const formatPrice=(p)=>{
+    if(p===null)return"Consultar";
+    const cur=currency||'ref';
+    const refStr='Ref '+formatNum(p);
+    if(cur==='ref')return refStr;
+    const bsStr=bcvRate?'Bs '+formatNum(p*bcvRate):'Bs —';
+    if(cur==='bs')return bsStr;
+    return refStr+' / '+bsStr;
+  };
 
   const totalProducts=Object.values(P).reduce((a,g)=>a+Object.values(g.subcategories).reduce((b,s)=>b+s.groups.reduce((c,gr)=>c+gr.items.length,0),0),0);
   const totalCats=Object.keys(P).length;
@@ -935,7 +1024,7 @@ function App(){
     <div className="subcat-header"><Img type={sub.image} sz={isDesktop?100:72}/><h2 className="section-title">{sub.name}</h2></div>
     {isDesktop?(
       <table className="product-table" style={{display:'table'}}>
-        <thead><tr><th>Medida</th><th>Dimensión</th><th>Grupo</th><th>Precio USD</th><th>Cantidad</th><th></th></tr></thead>
+        <thead><tr><th>Medida</th><th>Dimensión</th><th>Grupo</th><th>Precio</th><th>Cantidad</th><th></th></tr></thead>
         <tbody>
         {sub.groups.map((gr,gi)=>(<React.Fragment key={gi}>
           <tr className="group-header-row"><td colSpan={6}>{gr.label}</td></tr>
@@ -943,7 +1032,7 @@ function App(){
             <td className="td-size">{item.size}</td>
             <td className="td-dim">{item.dim}</td>
             <td className="td-group">{gr.label}</td>
-            <td className={item.price!==null?"td-price":"td-price consultar"}>{fmt(item.price)}</td>
+            <td className={item.price!==null?"td-price":"td-price consultar"}>{formatPrice(item.price)}</td>
             <td style={{textAlign:'center'}} onClick={e=>e.stopPropagation()}>{item.price!==null&&(<div>
               <div className="table-qty-wrap">
                 <button className="table-qty-btn" onClick={()=>{const cur=typeof tq==='number'?tq:1;setTableQty(qKey,Math.max(1,cur-1));}} disabled={typeof tq==='number'&&tq<=1}>−</button>
@@ -964,7 +1053,7 @@ function App(){
           <div className="product-row" style={isOpen?{borderRadius:'8px 8px 0 0',marginBottom:0,borderColor:'var(--c-accent-border)'}:{}} onClick={()=>goP(gk,sk,gi,pi)}>
             <div style={{flex:1,minWidth:0}}><div className="p-size">{item.size}</div><div className="p-dim">{item.dim}</div></div>
             <div style={{display:'flex',alignItems:'center',gap:8}}>
-              <div className={item.price!==null?"p-price":"p-price consultar"}>{fmt(item.price)}</div>
+              <div className={item.price!==null?"p-price":"p-price consultar"}>{formatPrice(item.price)}</div>
               {item.price!==null&&<button className="mobile-quick-add" onClick={e=>{e.stopPropagation();if(isOpen){setMobileQtyOpen(null);}else{setMobileQtyOpen(mKey);setMobileQtyVal(1);}}}>{isOpen?"✕":"🛒"}</button>}
             </div>
           </div>
@@ -1002,7 +1091,7 @@ function App(){
         <div className="detail-info">
           <h2 className="detail-name">{sub.name}</h2>
           <p className="detail-sub">{item.size} — {item.dim}</p>
-          <div className={item.price!==null?"detail-price":"detail-price consultar"}>{fmt(item.price)}</div>
+          <div className={item.price!==null?"detail-price":"detail-price consultar"}>{formatPrice(item.price)}</div>
           <p className="detail-iva">IVA incluido · por unidad</p>
           <div className="detail-spec"><span className="spec-label">Medida</span><span className="spec-val">{item.size}</span></div>
           <div className="detail-spec"><span className="spec-label">Dimensión / Largo</span><span className="spec-val">{item.dim}</span></div>
@@ -1017,7 +1106,7 @@ function App(){
               <button className="qty-btn" onClick={()=>setQty(Math.max(1,qtyNum-1))} disabled={qtyNum<=1}>−</button>
               <input type="number" className="qty-input" value={qty} min="1" max="499" onChange={e=>{const v=e.target.value;if(v===''){setQty('');return;}const n=parseInt(v);if(!isNaN(n)&&n>=0)setQty(Math.min(499,Math.max(1,n)));}} onBlur={()=>{if(qty===''||qty<1)setQty(1);}} onFocus={e=>e.target.select()}/>
               <button className="qty-btn" onClick={()=>setQty(Math.min(499,qtyNum+1))} disabled={qtyNum>=499}>+</button>
-              {canAdd&&<div className="qty-total">Total: <span>${lineTotal.toLocaleString("es-VE",{minimumFractionDigits:lineTotal%1!==0?2:0})}</span></div>}
+              {canAdd&&<div className="qty-total">Total: <span>{formatPrice(lineTotal)}</span></div>}
             </div>
             <button className="add-cart-btn" disabled={!canAdd||!qtyNum} onClick={()=>canAdd&&qtyNum&&addToCart(sub.name,item,qtyNum,gk,sk)}>
               {canAdd?`🛒 Agregar ${qtyNum||''} al carrito`:"Precio no disponible"}
@@ -1029,7 +1118,7 @@ function App(){
       {others.length>0&&<><h3 className="other-title">Otras medidas disponibles</h3>
         {others.slice(0,10).map((o,i)=>(<div key={i} className="product-row" onClick={()=>goP(gk,sk,o.gi,o.pi)}>
           <div><div className="p-size">{o.size}</div><div className="p-dim">{o.dim} — {o.gl}</div></div>
-          <div className={o.price!==null?"p-price":"p-price consultar"}>{fmt(o.price)}</div>
+          <div className={o.price!==null?"p-price":"p-price consultar"}>{formatPrice(o.price)}</div>
         </div>))}
         {others.length>10&&<div style={{textAlign:"center",padding:12}}><button className="view-all-btn" onClick={()=>goS(gk,sk)}>Ver todas las {all.length} opciones</button></div>}
       </>}
@@ -1058,8 +1147,8 @@ function App(){
             <button className="cart-qty-btn" onClick={()=>updateCartQty(c.id,1)} disabled={typeof c.qty==='number'&&c.qty>=499}>+</button>
           </div>
           <div>
-            <div className="cart-item-price">${(c.price*(typeof c.qty==='number'?c.qty:0)).toLocaleString("es-VE",{minimumFractionDigits:2})}</div>
-            <div className="cart-item-unit">{typeof c.qty==='number'?c.qty:'—'} × ${c.price.toLocaleString("es-VE",{minimumFractionDigits:c.price%1!==0?2:0})}</div>
+            <div className="cart-item-price">{formatPrice(c.price*(typeof c.qty==='number'?c.qty:0))}</div>
+            <div className="cart-item-unit">{typeof c.qty==='number'?c.qty:'—'} × {formatPrice(c.price)}</div>
           </div>
         </div>
       </div>))}
@@ -1068,8 +1157,8 @@ function App(){
       <div className="cart-summary">
         <div className="cart-summary-row"><span className="cart-summary-label">Productos</span><span className="cart-summary-val">{cartCount} pza</span></div>
         <div className="cart-summary-row"><span className="cart-summary-label">Artículos diferentes</span><span className="cart-summary-val">{cart.length}</span></div>
-        <div className="cart-total-row"><span className="cart-total-label">TOTAL</span><span className="cart-total-val">${cartTotal.toLocaleString("es-VE",{minimumFractionDigits:2})}</span></div>
-        <div className="cart-iva-note">IVA incluido · Precios en USD</div>
+        <div className="cart-total-row"><span className="cart-total-label">TOTAL</span><span className="cart-total-val">{formatPrice(cartTotal)}</span></div>
+        <div className="cart-iva-note">IVA incluido</div>
         <button className="cart-checkout-btn" onClick={()=>{setShowModal(true);setCopied(false);}}>📋 Enviar pedido</button>
         <button className="continue-btn" onClick={home}>Seguir comprando</button>
         <button className="cart-clear-btn" onClick={()=>{if(window.confirm('¿Estás seguro que deseas vaciar el carrito? Se eliminarán todos los productos.'))clearCart();}}>Vaciar carrito</button>
@@ -1082,7 +1171,7 @@ function App(){
     <p className="search-count">{sr.length} resultado{sr.length!==1?"s":""}</p>
     {sr.map((r,i)=>(<div key={i} className="search-result" onClick={()=>{setShowS(false);setQ("");goP(r.gKey,r.sKey,r.gi,r.pi);}}>
       <div className="sr-row"><div><div className="sr-name">{r.item.size}</div><div className="sr-sub">{r.subName} — {r.item.dim}</div></div>
-      <div className={r.item.price!==null?"p-price":"p-price consultar"}>{fmt(r.item.price)}</div></div>
+      <div className={r.item.price!==null?"p-price":"p-price consultar"}>{formatPrice(r.item.price)}</div></div>
     </div>))}
   </div>);
 
@@ -1104,6 +1193,29 @@ function App(){
     </div>);
   };
 
+  const renderCurrencyPopup=()=>{
+    if(!showCurrencyPopup)return null;
+    const ex=70;const bsEx=bcvRate?(ex*bcvRate):31995.60;
+    return(<div className="currency-popup-overlay" onClick={()=>{if(currency)setShowCurrencyPopup(false);}}>
+      <div className="currency-popup" onClick={e=>e.stopPropagation()}>
+        <div className="modal-title">Selecciona la moneda</div>
+        <div className="modal-sub">Elige cómo deseas ver los precios en el catálogo.</div>
+        <button className="currency-option" onClick={()=>selectCurrency('ref')}>
+          <div className="currency-label">Ref (Referencia)</div>
+          <div className="currency-example">Ejemplo: Ref {formatNum(ex)}</div>
+        </button>
+        <button className="currency-option" onClick={()=>selectCurrency('bs')}>
+          <div className="currency-label">Bs (Bolívares)</div>
+          <div className="currency-example">Ejemplo: Bs {formatNum(bsEx)}</div>
+        </button>
+        <button className="currency-option" onClick={()=>selectCurrency('ambas')}>
+          <div className="currency-label">Ambas</div>
+          <div className="currency-example">Ejemplo: Ref {formatNum(ex)} / Bs {formatNum(bsEx)}</div>
+        </button>
+      </div>
+    </div>);
+  };
+
   const desktopSearchChange=(e)=>{setQ(e.target.value);if(!showS)setShowS(true);};
   const closeDesktopSearch=()=>{setQ("");};
 
@@ -1119,12 +1231,13 @@ function App(){
               <div style={{padding:'8px 12px',fontSize:12,color:'var(--c-text-dim)',borderBottom:'1px solid var(--c-accent-border-faint)'}}>{sr.length} resultado{sr.length!==1?'s':''}</div>
               {sr.map((r,i)=>(<div key={i} className="search-result" onClick={()=>{setShowS(false);setQ("");goP(r.gKey,r.sKey,r.gi,r.pi);}}>
                 <div className="sr-row"><div><div className="sr-name">{r.item.size}</div><div className="sr-sub">{r.subName} — {r.item.dim}</div></div>
-                <div className={r.item.price!==null?"p-price":"p-price consultar"}>{fmt(r.item.price)}</div></div>
+                <div className={r.item.price!==null?"p-price":"p-price consultar"}>{formatPrice(r.item.price)}</div></div>
               </div>))}
             </div>
           )}
         </div>
         <div className="header-actions">
+          <button className="currency-toggle" onClick={()=>setShowCurrencyPopup(true)} title="Cambiar moneda">{(currency||'ref')==='ref'?'Ref':currency==='bs'?'Bs':'Ref/Bs'}</button>
           <button className="theme-toggle" onClick={toggleTheme} title={theme==='dark'?'Modo claro':'Modo oscuro'}>{theme==='dark'?'☀️':'🌙'}</button>
           <button className={`icon-btn mobile-only ${showS?"active":""}`} onClick={()=>{setShowS(!showS);setQ("");if(v===V.CART)setV(V.HOME);}}>{showS?"✕":"🔍"}</button>
           <button className={`icon-btn ${v===V.CART?"active":""}`} onClick={goCart}>
@@ -1161,11 +1274,16 @@ function App(){
         <div className="footer-col"><div className="footer-logo">LADA</div><p className="footer-desc">Materiales y Construcción. Catálogo completo de productos de acero y materiales de construcción para la industria venezolana.</p></div>
         <div className="footer-col"><div className="footer-heading">Categorías</div>{Object.entries(P).map(([key,g])=>(<button key={key} className="footer-link" onClick={()=>goG(key)}>{g.icon} {g.name}</button>))}</div>
         <div className="footer-col"><div className="footer-heading">Contacto</div><p className="footer-link" style={{cursor:'default'}}>Consultas y pedidos</p><p className="footer-link" style={{cursor:'default'}}>por WhatsApp</p></div>
-        <div className="footer-col"><div className="footer-copyright"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD</p></div></div>
+        <div className="footer-col"><div className="footer-copyright"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA</p></div></div>
       </div>
-      <div className="footer-copyright mobile-only"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA · Precios en USD</p></div>
+      <div className="footer-copyright mobile-only"><p>© 2026 LADA — Materiales y Construcción</p><p>Todos los precios incluyen IVA</p></div>
     </footer>
+    <a href="https://wa.me/584121234567" target="_blank" rel="noopener noreferrer" className="wa-float" onMouseEnter={()=>setWaTooltip(true)} title="WhatsApp">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      {waTooltip&&<span className="wa-tooltip">Contáctanos vía WhatsApp<span className="wa-dismiss" onClick={e=>{e.preventDefault();e.stopPropagation();setWaTooltip(false);}}>✕</span></span>}
+    </a>
     {renderModal()}
+    {renderCurrencyPopup()}
   </div>);
 }
 
