@@ -856,18 +856,18 @@ return(<svg width={sz} height={sz} viewBox="0 0 200 200" style={{background:c.bg
 </svg>);}
 
 function LadaLogo({h=40,onClick}){
-  const sc=h/50;
-  return(<div style={{display:'flex',alignItems:'center',gap:h*0.2,cursor:onClick?'pointer':'default'}} onClick={onClick}>
-    <svg width={h} height={h} viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="25,2 46,15 46,22 25,9" fill="var(--c-text-strong,#1a1a1a)"/>
-      <polygon points="25,2 4,15 4,22 25,9" fill="var(--c-text-strong,#1a1a1a)"/>
-      <polygon points="4,22 4,40 18,48 18,30" fill="var(--c-accent,#1a7a3a)"/>
-      <polygon points="18,48 32,40 32,36 18,44" fill="var(--c-accent,#1a7a3a)"/>
-      <rect x="18" y="15" width="4" height="20" fill="#fff" opacity="0.15"/>
+  return(<div style={{display:'flex',alignItems:'center',gap:h*0.22,cursor:onClick?'pointer':'default'}} onClick={onClick}>
+    <svg width={h} height={h} viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30,3 L55,17 L55,27 L30,13 Z" fill="var(--c-text-strong,#1a1a1a)"/>
+      <path d="M30,3 L5,17 L5,27 L30,13 Z" fill="var(--c-text-strong,#1a1a1a)"/>
+      <path d="M5,27 L5,45 L16,51 L16,33 Z" fill="var(--c-text-strong,#1a1a1a)"/>
+      <path d="M55,27 L55,35 L42,42 L42,34 Z" fill="var(--c-text-strong,#1a1a1a)"/>
+      <path d="M16,33 L16,51 L30,58 L30,40 Z" fill="#1a9a3a"/>
+      <path d="M30,58 L44,51 L44,43 L30,50 Z" fill="#1a9a3a"/>
     </svg>
     <div>
-      <div style={{fontSize:h*0.24,fontWeight:700,color:'var(--c-accent)',letterSpacing:1,lineHeight:1,fontFamily:'Archivo,sans-serif'}}>COMERCIAL</div>
-      <div style={{fontSize:h*0.52,fontWeight:900,color:'var(--c-text-strong)',letterSpacing:h*0.06,lineHeight:1.05,fontFamily:'Archivo,sans-serif'}}>LADA <span style={{fontSize:h*0.36,fontWeight:800}}>C.A.</span></div>
+      <div style={{fontSize:h*0.22,fontWeight:700,color:'var(--c-accent)',letterSpacing:1,lineHeight:1,fontFamily:'Archivo,sans-serif'}}>COMERCIAL</div>
+      <div style={{fontSize:h*0.5,fontWeight:900,color:'var(--c-text-strong)',letterSpacing:h*0.06,lineHeight:1.05,fontFamily:'Archivo,sans-serif'}}>LADA <span style={{fontSize:h*0.34,fontWeight:800}}>C.A.</span></div>
     </div>
   </div>);
 }
@@ -1075,7 +1075,7 @@ function App(){
     </style></head><body>
     <div class="header">
       <div style="display:flex;align-items:center;gap:10px">
-        <svg width="40" height="40" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><polygon points="25,2 46,15 46,22 25,9" fill="#1a1a1a"/><polygon points="25,2 4,15 4,22 25,9" fill="#1a1a1a"/><polygon points="4,22 4,40 18,48 18,30" fill="#1a7a3a"/><polygon points="18,48 32,40 32,36 18,44" fill="#1a7a3a"/></svg>
+        <svg width="40" height="40" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><path d="M30,3 L55,17 L55,27 L30,13 Z" fill="#1a1a1a"/><path d="M30,3 L5,17 L5,27 L30,13 Z" fill="#1a1a1a"/><path d="M5,27 L5,45 L16,51 L16,33 Z" fill="#1a1a1a"/><path d="M55,27 L55,35 L42,42 L42,34 Z" fill="#1a1a1a"/><path d="M16,33 L16,51 L30,58 L30,40 Z" fill="#1a9a3a"/><path d="M30,58 L44,51 L44,43 L30,50 Z" fill="#1a9a3a"/></svg>
         <div><div style="font-size:10px;font-weight:700;color:#1a7a3a;letter-spacing:1px">COMERCIAL</div><div class="logo">LADA <span style="font-size:24px">C.A.</span></div><div class="subtitle">Desde 1937 · Materiales y Construcción</div></div>
       </div>
       <div class="doc-info"><strong>COTIZACIÓN</strong><br>Fecha: ${dateStr}<br>Productos: ${cartCount} piezas<br>Artículos: ${cart.length}</div>
